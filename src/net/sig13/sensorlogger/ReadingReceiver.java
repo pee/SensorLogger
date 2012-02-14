@@ -18,11 +18,11 @@ import net.sig13.sensorlogger.SensorLoggerService.LocalBinder;
 public class ReadingReceiver extends Service implements SensorEventListener, Runnable {
 
     private final static String LOG_NAME = "SensorLoggerService:RR";
+    public final static int DEFAULT_POLLING_DELAY = 60000;
     //
     private final static int READINGS_SIZE = 5;
     private final static double[] bReadings = new double[READINGS_SIZE];
     private double lastReading = 0;
-    private int readCount = 0;
     private double average;
     private SensorManager sm;
     private boolean listenerRegistered = false;
@@ -30,7 +30,11 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
     //
     private SensorLoggerService sls;
     //
+    private volatile int readCount = 0;
+    //
     private boolean mBound;
+    // polling delay in milliseconds
+    private int pollingDelay = DEFAULT_POLLING_DELAY;
 
     /*
      *
@@ -47,11 +51,14 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
         }
         this.handler = handler;
 
-      
-
-
     }
 
+    /*
+     *
+     *
+     *
+     */
+    @Override
     public void onSensorChanged(SensorEvent event) {
 
         Log.d(LOG_NAME, "onSensorChanged:");
@@ -63,6 +70,10 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
         }
     }
 
+    /*
+     *
+     *
+     */
     private synchronized void addReading(double reading) {
 
         Log.d(LOG_NAME, "new value:" + reading);
@@ -93,49 +104,60 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
 
     }
 
+    /*
+     *
+     *
+     *
+     */
+    @Override
     public void onAccuracyChanged(Sensor sensor, int value) {
 
         Log.d(LOG_NAME, "onAccuracyChanged:" + sensor + ":value:" + value);
 
     }
 
+    /*
+     *
+     *
+     *
+     */
+    @Override
     public synchronized void run() {
 
         Log.d(LOG_NAME, "run()*******************************");
 
-//          Intent intent = new Intent(this, SensorLoggerService.class);
-//        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-
         setupBarometer();
-        long base = SystemClock.uptimeMillis();
 
-//        while (readCount < READINGS_SIZE) {
-//            Log.d(LOG_NAME, "readCount:" + readCount);
-//            try {
-//                wait(1000);
-//            } catch (Exception e) {
-//                Log.d(LOG_NAME, "Exception in wait:" + e);
-//            }
-//        }
+        long now = SystemClock.uptimeMillis();
+
         readCount = 0;
 
-        handler.postAtTime(this, base + (60 * 1000));
+        handler.postAtTime(this, now + (pollingDelay));
 
 
     }
 
-    private void setupBarometer() {
+    /*
+     *
+     *
+     */
+    private boolean setupBarometer() {
 
         Log.d(LOG_NAME, "setUpBarometer");
 
         try {
-            //sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-            Sensor bar = sm.getDefaultSensor(Sensor.TYPE_PRESSURE);
+            Sensor barometer = sm.getDefaultSensor(Sensor.TYPE_PRESSURE);
 
-            if (bar != null) {
-                boolean running = sm.registerListener(this, bar, SensorManager.SENSOR_DELAY_NORMAL);
+            if (barometer != null) {
+
+                boolean running = sm.registerListener(this, barometer, SensorManager.SENSOR_DELAY_NORMAL);
+
+                if (running == false) {
+                    Log.e(LOG_NAME, "failed to register listener with sensor manager");
+                    return false;
+                }
+
                 listenerRegistered = true;
-                Log.d(LOG_NAME, "running:" + running);
 
             } else {
                 Log.e(LOG_NAME, "Unable to get sensor device =/");
@@ -143,19 +165,32 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
 
         } catch (Exception e) {
             Log.e(LOG_NAME, "failed to setup barometer", e);
+            return false;
         }
 
+
         Log.d(LOG_NAME, "setupBarometer():exit");
+        return true;
+
     }
 
+    /*
+     *
+     *
+     */
     @Override
     public IBinder onBind(Intent arg0) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
-        /** Defines callbacks for service binding, passed to bindService() */
+    /**
+     * Defines callbacks for service binding, passed to bindService()
+     */
     private ServiceConnection mConnection = new ServiceConnection() {
 
+        /*
+         *
+         *
+         */
         @Override
         public void onServiceConnected(ComponentName className,
                 IBinder service) {
@@ -165,6 +200,10 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
             mBound = true;
         }
 
+        /*
+         *
+         *
+         */
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             mBound = false;
