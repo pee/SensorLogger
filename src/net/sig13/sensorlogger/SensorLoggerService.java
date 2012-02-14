@@ -5,8 +5,7 @@
 package net.sig13.sensorlogger;
 
 import android.app.*;
-import android.content.Context;
-import android.content.Intent;
+import android.content.*;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.*;
@@ -34,6 +33,7 @@ public class SensorLoggerService extends IntentService {
     private Handler handler = new Handler();
     private ReadingReceiver rr;
     //
+    private SharedPreferences prefs;
 
 
     /*
@@ -100,6 +100,11 @@ public class SensorLoggerService extends IntentService {
     @Override
     public void onCreate() {
         Log.d(SERVICE_NAME, "onCreate:");
+
+        prefs = getSharedPreferences(Constants.SHARED_PREFS_FILE, MODE_PRIVATE);
+
+
+
 
         sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         rr = new ReadingReceiver(sm, handler);

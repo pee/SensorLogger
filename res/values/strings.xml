@@ -11,4 +11,9 @@
 
     <string name="notification_message">Notification Messages rock</string>
 
+    <!-- these don't do jack yet -->
+    <string name="sharedPrefsFile">user_preferences</string>
+
+    <string name="sharedPrefsBackupKey">prefs</string>
+
 </resources>
