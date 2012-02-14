@@ -21,12 +21,14 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
     public final static int DEFAULT_POLLING_DELAY = 60000;
     //
     private final static int READINGS_SIZE = 5;
-    private final static double[] bReadings = new double[READINGS_SIZE];
+    private final static double[] readings = new double[READINGS_SIZE];
     private double lastReading = 0;
     private double average;
     private SensorManager sm;
-    private boolean listenerRegistered = false;
+//
     private Handler handler;
+    //
+    private boolean pausePoll = false;
     //
     private SensorLoggerService sls;
     //
@@ -51,6 +53,42 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
         }
         this.handler = handler;
 
+    }
+
+    /*
+     *
+     *
+     */
+    public void setPollingDelay(int pollingDelay) {
+
+        if (pollingDelay < 0) {
+            Log.d(LOG_NAME, "polling delay cannot be negative");
+            throw new IllegalArgumentException("polling delay cannot be negative");
+        }
+
+        if (pollingDelay < Constants.MIN_POLLING_DELAY) {
+            pollingDelay = Constants.MIN_POLLING_DELAY;
+        }
+
+        if (pollingDelay > Constants.MAX_POLLING_DELAY) {
+            pollingDelay = Constants.MAX_POLLING_DELAY;
+        }
+
+        this.pollingDelay = pollingDelay;
+        Log.i(LOG_NAME, "pollingDelay set to:" + pollingDelay);
+
+        //
+        if (pollingDelay == 0) {
+            pausePoll = true;
+        }
+    }
+
+    /*
+     *
+     *
+     */
+    public void pausePoll(boolean status) {
+        this.pausePoll = status;
     }
 
     /*
@@ -85,15 +123,17 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
             return;
         }
 
-        bReadings[readCount++] = reading;
+        readings[readCount++] = reading;
 
         if (readCount == READINGS_SIZE) {
 
             average = 0.0;
 
-            for (double value : bReadings) {
+            for (double value : readings) {
                 average += value;
             }
+
+            assert (READINGS_SIZE > 0);
             average = average / READINGS_SIZE;
 
             Log.i(LOG_NAME, "Average:" + average);
@@ -126,13 +166,22 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
 
         Log.d(LOG_NAME, "run()*******************************");
 
-        setupBarometer();
-
         long now = SystemClock.uptimeMillis();
 
-        readCount = 0;
+        if (pausePoll == false) {
+            setupBarometer();
 
-        handler.postAtTime(this, now + (pollingDelay));
+            readCount = 0;
+            Log.d(LOG_NAME, "polling in:" + pollingDelay + "ms");
+            handler.postAtTime(this, now + pollingDelay);
+
+        } else {
+
+            // Poll is paused, check again in a few minutes
+            Log.d(LOG_NAME, "polling paused: checking in:" + Constants.PAUSE_POLLING_DELAY + "ms");
+            handler.postAtTime(this, now + Constants.PAUSE_POLLING_DELAY);
+
+        }
 
 
     }
@@ -156,8 +205,6 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
                     Log.e(LOG_NAME, "failed to register listener with sensor manager");
                     return false;
                 }
-
-                listenerRegistered = true;
 
             } else {
                 Log.e(LOG_NAME, "Unable to get sensor device =/");

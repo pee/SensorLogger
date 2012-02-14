@@ -101,13 +101,14 @@ public class SensorLoggerService extends IntentService {
     public void onCreate() {
         Log.d(SERVICE_NAME, "onCreate:");
 
+        Log.d(SERVICE_NAME, "getSharedPreferences");
         prefs = getSharedPreferences(Constants.SHARED_PREFS_FILE, MODE_PRIVATE);
 
-
-
-
         sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
         rr = new ReadingReceiver(sm, handler);
+        int pollingDelay = prefs.getInt(Constants.POLLING_DELAY_PREFNAME, Constants.DEFAULT_POLLING_DELAY);
+        rr.setPollingDelay(pollingDelay);
 
         Context context = getBaseContext();
         // The service is being created
