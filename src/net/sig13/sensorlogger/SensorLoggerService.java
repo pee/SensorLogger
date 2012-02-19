@@ -6,13 +6,14 @@ package net.sig13.sensorlogger;
 
 import android.app.*;
 import android.content.*;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.*;
 import android.os.*;
 import android.util.Log;
 
-public class SensorLoggerService extends IntentService {
+public class SensorLoggerService extends IntentService implements OnSharedPreferenceChangeListener {
 
     private static final String SERVICE_NAME = "SensorLoggerService";
     //
@@ -103,6 +104,7 @@ public class SensorLoggerService extends IntentService {
 
         Log.d(SERVICE_NAME, "getSharedPreferences");
         prefs = getSharedPreferences(Constants.SHARED_PREFS_FILE, MODE_PRIVATE);
+        prefs.registerOnSharedPreferenceChangeListener(this);
 
         sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
@@ -193,11 +195,10 @@ public class SensorLoggerService extends IntentService {
     @Override
     public void onDestroy() {
         Log.d(SERVICE_NAME, "onDestroy");
-        // The service is no longer used and is being destroyed
-//        if (listenerRegistered == true) {
-//            Log.d(SERVICE_NAME, "unregistering sensor listener");
-//            sm.unregisterListener(this);
-//        }
+
+        Log.d(SERVICE_NAME, "unregistering for shared pref changes");
+        prefs.unregisterOnSharedPreferenceChangeListener(this);
+
     }
 
     /*
@@ -213,6 +214,15 @@ public class SensorLoggerService extends IntentService {
             getLock(this).release();
         }
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void onSharedPreferenceChanged(SharedPreferences sPref, String key) {
+
+        Log.d(SERVICE_NAME, "onSharedPreferenceChanged");
+        Log.d(SERVICE_NAME, "sPref:" + sPref);
+        Log.d(SERVICE_NAME, "key:" + key);
+
+
     }
 
     /**

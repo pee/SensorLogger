@@ -21,8 +21,8 @@
             android:title="Updates interval"
             android:summary="Define how often updates will be performed"
             android:defaultValue="1000"
-            android:entries="@array/updateInterval"
-            android:entryValues="@array/updateIntervalValues"
+            android:entries="@array/pollingIntervals"
+            android:entryValues="@array/pollingIntervalValues"
             android:dependency="perform_updates"
         />
 

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
+import net.sig13.sensorlogger.prefs.MainPrefsActivity;
 
 /**
  *
@@ -33,9 +34,7 @@ public class SensorLogger extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.settings_menu, menu);
-//        return true;
+
         menu.add(Menu.NONE, 0, 0, "settings");
         return super.onCreateOptionsMenu(menu);
     }
@@ -55,7 +54,7 @@ public class SensorLogger extends Activity {
     }
 
     private void showOptions() {
-        Intent intent = new Intent(this, QuickPrefsActivity.class);
+        Intent intent = new Intent(this, MainPrefsActivity.class);
         this.startActivity(intent);
     }
 

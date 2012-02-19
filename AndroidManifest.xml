@@ -54,14 +54,9 @@
         <meta-data android:name="com.google.android.backup.api_key"
                    android:value="AEdPqrEAAAAIq_ZoNE3rVwLNPJX4U8MeMEaqXfDFQxCWYM0L4A" />
 
-        <activity android:name=".QuickPrefsActivity" android:label="@string/appName">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
+        <activity android:name=".QuickPrefsActivity" android:label="@string/appName"/>
         <activity android:name=".ShowSettingsActivity" />
+        <activity android:name="net.sig13.sensorlogger.prefs.MainPrefsActivity"/>
 
     </application>
 
