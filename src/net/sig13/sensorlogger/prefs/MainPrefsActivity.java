@@ -8,11 +8,13 @@ import android.R;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.*;
 import android.util.Log;
 
 //
-public class MainPrefsActivity extends PreferenceActivity {
+public class MainPrefsActivity extends PreferenceActivity implements OnPreferenceChangeListener, OnPreferenceClickListener {
 
     private final static String LOG_NAME = "SL:MainPrefsActivity";
     private FragmentManager fm;
@@ -41,5 +43,15 @@ public class MainPrefsActivity extends PreferenceActivity {
         pm = getPreferenceManager();
         root = pm.createPreferenceScreen(this);
 
+    }
+
+    public boolean onPreferenceChange(Preference preference, Object arg1) {
+        Log.d(LOG_NAME, "onPreferenceChange");
+        return true;
+    }
+
+    public boolean onPreferenceClick(Preference preference) {
+        Log.d(LOG_NAME, "onPreferenceClic");
+        return true;
     }
 }
