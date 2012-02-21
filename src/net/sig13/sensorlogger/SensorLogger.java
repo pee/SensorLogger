@@ -36,24 +36,24 @@ public class SensorLogger extends Activity {
 
         Map<String, ?> allPrefs = prefs.getAll();
 
-        Log.d(LN, "onCreate:dumping keys");
-        Set<String> keys = allPrefs.keySet();
-        for (String key : keys) {
-            Log.i(LN, key + ":" + allPrefs.get(key).getClass()); // Dummy , put break point here
-        }
-        Log.d(LN, "onCreate:done dumping keys");
+//        Log.d(LN, "onCreate:dumping keys");
+//        Set<String> keys = allPrefs.keySet();
+//        for (String key : keys) {
+//            Log.i(LN, key + ":" + allPrefs.get(key).getClass()); // Dummy , put break point here
+//        }
+//        Log.d(LN, "onCreate:done dumping keys");
 
 
         PreferenceManager.setDefaultValues(this, R.xml.pref_polling, true);
 
-        Log.d(LN, "onCreate:dumping keys");
-        allPrefs = prefs.getAll();
-
-        keys = allPrefs.keySet();
-        for (String key : keys) {
-            Log.i(LN, key + ":" + allPrefs.get(key).getClass()); // Dummy , put break point here
-        }
-        Log.d(LN, "onCreate:done dumping keys");
+//        Log.d(LN, "onCreate:dumping keys");
+//        allPrefs = prefs.getAll();
+//
+//        keys = allPrefs.keySet();
+//        for (String key : keys) {
+//            Log.i(LN, key + ":" + allPrefs.get(key).getClass()); // Dummy , put break point here
+//        }
+//        Log.d(LN, "onCreate:done dumping keys");
 
         Intent intent = new Intent(this, SensorLoggerService.class);
 

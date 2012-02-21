@@ -90,6 +90,7 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
         if (pollingDelay > 0) {
             pausePoll = false;
             handler.postDelayed(this, pollingDelay);
+
         }
     }
 
@@ -222,6 +223,7 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
 
             } else {
                 Log.e(LOG_NAME, "Unable to get sensor device =/");
+                return false;
             }
 
         } catch (Exception e) {
@@ -229,8 +231,6 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
             return false;
         }
 
-
-        Log.d(LOG_NAME, "setupBarometer():exit");
         return true;
 
     }
