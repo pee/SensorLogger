@@ -21,6 +21,7 @@
             android:defaultValue="300000"
             android:dialogTitle="dialogTitle_polling_interval"
             android:dependency="enable_polling"
+            android:numeric="integer"
             />
 
 

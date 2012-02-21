@@ -38,9 +38,9 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
 
         Log.d(LOG_NAME, "onCreate()");
 
-        //addPreferencesFromResource(R.xml.pref_polling);
+        addPreferencesFromResource(R.xml.pref_polling);
 
-        setPreferenceScreen(buildPreferenceTree());
+        //setPreferenceScreen(buildPreferenceTree());
 
         pm = getPreferenceManager();
         prefs = pm.getSharedPreferences();
@@ -78,6 +78,7 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
         lp.setEntries(R.array.pollingIntervals);
         lp.setEntryValues(R.array.pollingIntervalValues);
         lp.setDefaultValue(Integer.decode("30000"));
+
 
 
         root.addPreference(lp);
@@ -153,7 +154,9 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
                 // check if it's an Integer parseable value
                 int newValueAsInt = Integer.parseInt(newValue.toString());
 
-                editor.putInt(Constants.PREF_KEY_POLLING_INTERVAL, newValueAsInt);
+                //editor.putInt(Constants.PREF_KEY_POLLING_INTERVAL, newValueAsInt);
+                editor.putString(Constants.PREF_KEY_POLLING_INTERVAL, newValue.toString());
+
                 changed = true;
 
             } catch (Exception e) {

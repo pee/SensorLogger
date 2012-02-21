@@ -14,14 +14,14 @@
         <item name="3600000">Every 60 minutes</item>
     </string-array>
 
-    <integer-array name="pollingIntervalValues">
+    <string-array name="pollingIntervalValues">
         <item name="60000">60000</item>
         <item name="300000">300000</item>
         <item name="600000">600000</item>
         <item name="900000">900000</item>
         <item name="1800000">1800000</item>
         <item name="3600000">3600000</item>
-    </integer-array>
+    </string-array>
 
 </resources>
 

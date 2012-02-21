@@ -112,8 +112,9 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
         rr = new ReadingReceiver(sm, handler);
-        int pollingDelay = prefs.getInt(Constants.PREF_KEY_POLLING_INTERVAL, Constants.DEFAULT_POLLING_DELAY);
-        rr.setPollingDelay(pollingDelay);
+        String piString = prefs.getString(Constants.PREF_KEY_POLLING_INTERVAL, Constants.DEFAULT_POLLING_DELAY_STRING);
+        pollingInterval = Integer.parseInt(piString);
+        rr.setPollingDelay(pollingInterval);
 
         Context context = getBaseContext();
         // The service is being created
@@ -234,7 +235,10 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
 
             Log.d(SERVICE_NAME, "Updating polling interval");
 
-            pollingInterval = sPref.getInt(Constants.PREF_KEY_POLLING_INTERVAL, Constants.DEFAULT_POLLING_DELAY);
+            String pi = sPref.getString(Constants.PREF_KEY_POLLING_INTERVAL, Constants.DEFAULT_POLLING_DELAY_STRING);
+            //pollingInterval = sPref.getInt(Constants.PREF_KEY_POLLING_INTERVAL, Constants.DEFAULT_POLLING_DELAY);
+
+            pollingInterval = Integer.parseInt(pi);
 
             Log.d(SERVICE_NAME, "Updating polling interval to " + pollingInterval);
             rr.setPollingDelay(pollingInterval);
