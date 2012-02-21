@@ -11,10 +11,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import net.sig13.sensorlogger.prefs.MainPrefsActivity;
 
-/**
- *
- * @author pee
- */
+//
+//
+//
 public class SensorLogger extends Activity {
 
     private final static String LN = "SensorLogger";
