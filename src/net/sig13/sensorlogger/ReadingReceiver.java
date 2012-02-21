@@ -61,16 +61,21 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
      */
     public void setPollingDelay(int pollingDelay) {
 
+        Log.d(LOG_NAME, "setPollingDelay");
+        handler.removeCallbacks(this);
+
         if (pollingDelay < 0) {
             Log.d(LOG_NAME, "polling delay cannot be negative");
             throw new IllegalArgumentException("polling delay cannot be negative");
         }
 
         if (pollingDelay < Constants.MIN_POLLING_DELAY) {
+            Log.w(LOG_NAME, "setting polling delay to min:" + Constants.MIN_POLLING_DELAY);
             pollingDelay = Constants.MIN_POLLING_DELAY;
         }
 
         if (pollingDelay > Constants.MAX_POLLING_DELAY) {
+            Log.w(LOG_NAME, "setting polling delay to max:" + Constants.MAX_POLLING_DELAY);
             pollingDelay = Constants.MAX_POLLING_DELAY;
         }
 
@@ -81,6 +86,11 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
         if (pollingDelay == 0) {
             pausePoll = true;
         }
+
+        if (pollingDelay > 0) {
+            pausePoll = false;
+            handler.postDelayed(this, pollingDelay);
+        }
     }
 
     /*
@@ -88,7 +98,11 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
      *
      */
     public void pausePoll(boolean status) {
-        this.pausePoll = status;
+        pausePoll = status;
+    }
+
+    public boolean isPaused() {
+        return pausePoll;
     }
 
     /*
