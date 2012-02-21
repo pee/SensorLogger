@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.*;
 import android.os.*;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class SensorLoggerService extends IntentService implements OnSharedPreferenceChangeListener {
@@ -35,7 +36,7 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
     private ReadingReceiver rr;
     //
     private SharedPreferences prefs;
-
+    private int pollingInterval;
 
     /*
      *
@@ -103,13 +104,15 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         Log.d(SERVICE_NAME, "onCreate:");
 
         Log.d(SERVICE_NAME, "getSharedPreferences");
-        prefs = getSharedPreferences(Constants.SHARED_PREFS_FILE, MODE_PRIVATE);
+        //prefs = getSharedPreferences(Constants.SHARED_PREFS_FILE, MODE_PRIVATE);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
         prefs.registerOnSharedPreferenceChangeListener(this);
 
         sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
         rr = new ReadingReceiver(sm, handler);
-        int pollingDelay = prefs.getInt(Constants.POLLING_DELAY_PREFNAME, Constants.DEFAULT_POLLING_DELAY);
+        int pollingDelay = prefs.getInt(Constants.PREF_KEY_POLLING_INTERVAL, Constants.DEFAULT_POLLING_DELAY);
         rr.setPollingDelay(pollingDelay);
 
         Context context = getBaseContext();
@@ -127,14 +130,15 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
 
         Log.d(SERVICE_NAME, "onStartCommand");
 
-        //super.onStartCommand(intent, flags, startId);
-
-
         Notification notification = mkForegroundNotification();
         startForeground(NOTIFICATION_ID, notification);
 
+        // clear pending scheduled handle events for rr
         handler.removeCallbacks(rr);
+
+        // schedule run of rr
         handler.postDelayed(rr, 0);
+
         return mStartMode;
     }
 
@@ -221,6 +225,34 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         Log.d(SERVICE_NAME, "onSharedPreferenceChanged");
         Log.d(SERVICE_NAME, "sPref:" + sPref);
         Log.d(SERVICE_NAME, "key:" + key);
+
+        if (key == null) {
+            return;
+        }
+
+        if (key.compareToIgnoreCase(Constants.PREF_KEY_POLLING_INTERVAL) == 0) {
+
+            Log.d(SERVICE_NAME, "Updating polling interval");
+
+            pollingInterval = sPref.getInt(Constants.PREF_KEY_POLLING_INTERVAL, Constants.DEFAULT_POLLING_DELAY);
+
+            Log.d(SERVICE_NAME, "Updating polling interval to " + pollingInterval);
+            rr.setPollingDelay(pollingInterval);
+
+            return;
+
+        }
+
+        if (key.compareToIgnoreCase(Constants.PREF_KEY_ENABLE_POLLING) == 0) {
+
+            Log.d(SERVICE_NAME, "Updating polling status");
+            boolean pauseStatus = sPref.getBoolean(Constants.PREF_KEY_ENABLE_POLLING, false);
+
+            Log.d(SERVICE_NAME, "Updating polling status to " + pauseStatus);
+            rr.pausePoll(pauseStatus);
+
+            return;
+        }
 
 
     }

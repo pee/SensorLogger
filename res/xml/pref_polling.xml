@@ -9,6 +9,7 @@
             android:key="enable_polling"
             android:title="enable_polling_checkbox_title"
             android:summary="enable_polling_checkbox_summary"
+            android:defaultValue="true"
             />
 
         <ListPreference
