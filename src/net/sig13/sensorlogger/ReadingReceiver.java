@@ -1,23 +1,24 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+//
+//
+//
 package net.sig13.sensorlogger;
 
 import android.app.Service;
 import android.content.*;
 import android.hardware.*;
+import android.net.Uri;
 import android.os.*;
 import android.util.Log;
 import net.sig13.sensorlogger.SensorLoggerService.LocalBinder;
+import net.sig13.sensorlogger.cp.PressureDataTable;
+import net.sig13.sensorlogger.cp.SensorContentProvider;
 
-/**
- *
- * @author pee
- */
+//
+//
+//
 public class ReadingReceiver extends Service implements SensorEventListener, Runnable {
 
-    private final static String LOG_NAME = "SensorLoggerService:RR";
+    private final static String TAG = "SensorLoggerService:RR";
     public final static int DEFAULT_POLLING_DELAY = 60000;
     //
     private final static int READINGS_SIZE = 5;
@@ -25,7 +26,7 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
     private double lastReading = 0;
     private double average;
     private SensorManager sm;
-//
+    //
     private Handler handler;
     //
     private boolean pausePoll = false;
@@ -37,11 +38,13 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
     private boolean mBound;
     // polling delay in milliseconds
     private int pollingDelay = DEFAULT_POLLING_DELAY;
+    //
+    private ContentResolver cr;
 
     /*
      *
      */
-    public ReadingReceiver(SensorManager sm, Handler handler) {
+    public ReadingReceiver(SensorManager sm, Handler handler, ContentResolver cr) {
 
         if (sm == null) {
             throw new NullPointerException("SensorManager must not be null");
@@ -53,6 +56,29 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
         }
         this.handler = handler;
 
+        if (cr == null) {
+            throw new NullPointerException("ContentResolver must not be null");
+        }
+        this.cr = cr;
+
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        Log.d(TAG, "onCreate");
+
+        //cr = getContentResolver();
+
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        Log.d(TAG, "onDestroy");
     }
 
     /*
@@ -61,26 +87,26 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
      */
     public void setPollingDelay(int pollingDelay) {
 
-        Log.d(LOG_NAME, "setPollingDelay");
+        Log.d(TAG, "setPollingDelay");
         handler.removeCallbacks(this);
 
         if (pollingDelay < 0) {
-            Log.d(LOG_NAME, "polling delay cannot be negative");
+            Log.d(TAG, "polling delay cannot be negative");
             throw new IllegalArgumentException("polling delay cannot be negative");
         }
 
         if (pollingDelay < Constants.MIN_POLLING_DELAY) {
-            Log.w(LOG_NAME, "setting polling delay to min:" + Constants.MIN_POLLING_DELAY);
+            Log.w(TAG, "setting polling delay to min:" + Constants.MIN_POLLING_DELAY);
             pollingDelay = Constants.MIN_POLLING_DELAY;
         }
 
         if (pollingDelay > Constants.MAX_POLLING_DELAY) {
-            Log.w(LOG_NAME, "setting polling delay to max:" + Constants.MAX_POLLING_DELAY);
+            Log.w(TAG, "setting polling delay to max:" + Constants.MAX_POLLING_DELAY);
             pollingDelay = Constants.MAX_POLLING_DELAY;
         }
 
         this.pollingDelay = pollingDelay;
-        Log.i(LOG_NAME, "pollingDelay set to:" + pollingDelay);
+        Log.i(TAG, "pollingDelay set to:" + pollingDelay);
 
         //
         if (pollingDelay == 0) {
@@ -114,7 +140,7 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
     @Override
     public void onSensorChanged(SensorEvent event) {
 
-        Log.d(LOG_NAME, "onSensorChanged:");
+        Log.d(TAG, "onSensorChanged:");
         switch (event.sensor.getType()) {
             case Sensor.TYPE_PRESSURE:
                 lastReading = event.values[0];
@@ -129,10 +155,10 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
      */
     private synchronized void addReading(double reading) {
 
-        Log.d(LOG_NAME, "new value:" + reading);
+        Log.d(TAG, "new value:" + reading);
 
         if (readCount >= READINGS_SIZE) {
-            Log.e(LOG_NAME, "Tried to add too many readings:" + readCount + ":" + reading);
+            Log.e(TAG, "Tried to add too many readings:" + readCount + ":" + reading);
             sm.unregisterListener(this);
             readCount = 0;
             return;
@@ -151,11 +177,35 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
             assert (READINGS_SIZE > 0);
             average = average / READINGS_SIZE;
 
-            Log.i(LOG_NAME, "Average:" + average);
+            Log.i(TAG, "Average:" + average);
 
             sm.unregisterListener(this);
+
+            updateRecord(average);
             readCount = 0;
         }
+
+    }
+
+    private void updateRecord(double newReading) {
+        // Defines a new Uri object that receives the result of the insertion
+        Uri mNewUri;
+
+
+        // Defines an object to contain the new values to insert
+        ContentValues mNewValues = new ContentValues();
+
+        /*
+         * Sets the values of each column and inserts the word. The arguments to the "put" method are "column name" and "value"
+         */
+        mNewValues.put(PressureDataTable.COLUMN_TIME, System.currentTimeMillis());
+        mNewValues.put(PressureDataTable.COLUMN_VALUE, newReading);
+
+        Uri CONTENT_URI = Uri.parse("content://" + SensorContentProvider.AUTHORITY + "/readings");
+
+        mNewUri = cr.insert(CONTENT_URI, mNewValues);
+
+        Log.d(TAG, "mNewUri:" + mNewUri);
 
     }
 
@@ -167,7 +217,7 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
     @Override
     public void onAccuracyChanged(Sensor sensor, int value) {
 
-        Log.d(LOG_NAME, "onAccuracyChanged:" + sensor + ":value:" + value);
+        Log.d(TAG, "onAccuracyChanged:" + sensor + ":value:" + value);
 
     }
 
@@ -179,7 +229,7 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
     @Override
     public synchronized void run() {
 
-        Log.d(LOG_NAME, "run()*******************************");
+        Log.d(TAG, "run()*******************************");
 
         long now = SystemClock.uptimeMillis();
 
@@ -187,13 +237,13 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
             setupBarometer();
 
             readCount = 0;
-            Log.d(LOG_NAME, "polling in:" + pollingDelay + "ms");
+            Log.d(TAG, "polling in:" + pollingDelay + "ms");
             handler.postAtTime(this, now + pollingDelay);
 
         } else {
 
             // Poll is paused, check again in a few minutes
-            Log.d(LOG_NAME, "polling paused: checking in:" + Constants.PAUSE_POLLING_DELAY + "ms");
+            Log.d(TAG, "polling paused: checking in:" + Constants.PAUSE_POLLING_DELAY + "ms");
             handler.postAtTime(this, now + Constants.PAUSE_POLLING_DELAY);
 
         }
@@ -207,7 +257,7 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
      */
     private boolean setupBarometer() {
 
-        Log.d(LOG_NAME, "setUpBarometer");
+        Log.d(TAG, "setUpBarometer");
 
         try {
             Sensor barometer = sm.getDefaultSensor(Sensor.TYPE_PRESSURE);
@@ -217,17 +267,17 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
                 boolean running = sm.registerListener(this, barometer, SensorManager.SENSOR_DELAY_NORMAL);
 
                 if (running == false) {
-                    Log.e(LOG_NAME, "failed to register listener with sensor manager");
+                    Log.e(TAG, "failed to register listener with sensor manager");
                     return false;
                 }
 
             } else {
-                Log.e(LOG_NAME, "Unable to get sensor device =/");
+                Log.e(TAG, "Unable to get sensor device =/");
                 return false;
             }
 
         } catch (Exception e) {
-            Log.e(LOG_NAME, "failed to setup barometer", e);
+            Log.e(TAG, "failed to setup barometer", e);
             return false;
         }
 

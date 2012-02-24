@@ -4,16 +4,16 @@
 package net.sig13.sensorlogger;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.SharedPreferences.Editor;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import net.sig13.sensorlogger.prefs.MainPrefsActivity;
 
 //
@@ -23,6 +23,11 @@ public class SensorLogger extends Activity {
 
     private final static String LN = "SensorLogger";
     public static final String PREFS_NAME = "SensorLoggerPrefs";
+    //
+    private List<Sensor> ambientTemp;
+    private List<Sensor> light;
+    private List<Sensor> pressure;
+    private List<Sensor> humidity;
 
     //private PreferenceManager pm;
     @Override
@@ -58,6 +63,47 @@ public class SensorLogger extends Activity {
         Intent intent = new Intent(this, SensorLoggerService.class);
 
         startService(intent);
+
+        acquireSensors();
+        dumpSensors();
+
+    }
+
+    private void acquireSensors() {
+
+        SensorManager sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
+        ambientTemp = sm.getSensorList(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        light = sm.getSensorList(Sensor.TYPE_LIGHT);
+        pressure = sm.getSensorList(Sensor.TYPE_PRESSURE);
+        humidity = sm.getSensorList(Sensor.TYPE_RELATIVE_HUMIDITY);
+
+
+    }
+
+    /*
+     *
+     *
+     */
+    private void dumpSensors() {
+
+        acquireSensors();
+        
+        for (Sensor sensor : ambientTemp) {
+            Log.d(LN, "ambientTemp:" + sensor.getName() + ":" + sensor.getVendor());
+        }
+
+        for (Sensor sensor : light) {
+            Log.d(LN, "light:" + sensor.getName() + ":" + sensor.getVendor());
+        }
+
+        for (Sensor sensor : pressure) {
+            Log.d(LN, "pressure:" + sensor.getName() + ":" + sensor.getVendor());
+        }
+
+        for (Sensor sensor : humidity) {
+            Log.d(LN, "humidity:" + sensor.getName() + ":" + sensor.getVendor());
+        }
 
     }
 

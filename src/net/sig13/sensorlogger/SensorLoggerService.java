@@ -37,6 +37,8 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
     //
     private SharedPreferences prefs;
     private int pollingInterval;
+    //
+    private ContentResolver cr;
 
     /*
      *
@@ -111,7 +113,8 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
 
         sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
-        rr = new ReadingReceiver(sm, handler);
+        cr = this.getContentResolver();
+        rr = new ReadingReceiver(sm, handler, cr);
         String piString = prefs.getString(Constants.PREF_KEY_POLLING_INTERVAL, Constants.DEFAULT_POLLING_DELAY_STRING);
         pollingInterval = Integer.parseInt(piString);
         rr.setPollingDelay(pollingInterval);

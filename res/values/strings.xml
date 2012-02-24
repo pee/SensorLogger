@@ -3,7 +3,7 @@
 
     <string name="appPackage">net.sig13.sensorlogger</string>
 
-    <string name="appName">SensorLogger</string>
+    <string name="appName">SLogger</string>
 
     <string name="ticker">Hi, I\'m the ticker text!</string>
 

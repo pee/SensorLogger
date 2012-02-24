@@ -40,6 +40,12 @@
         -->
         <service android:name="net.sig13.sensorlogger.SensorLoggerService" />
 
+        <!--
+        Database content provider
+        -->
+        <provider android:name="net.sig13.sensorlogger.cp.SensorContentProvider"
+                  android:authorities="net.sig13.sensorlogger.sensordataprovider"
+          />
 
         <!-- 
         // Register a class to receive boot broadcast, starts scheduling on startup
