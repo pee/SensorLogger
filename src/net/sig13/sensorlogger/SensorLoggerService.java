@@ -137,14 +137,11 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
         mgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 60000, 60000, pi);
 
-
-
         // clear pending scheduled handle events for rr
         handler.removeCallbacks(rr);
 
         // schedule run of rr
         handler.postDelayed(rr, 0);
-
 
     }
 
@@ -152,13 +149,11 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         Log.d(TAG, "onStartCommand");
-        //super.onStartCommand(intent, flags, startId);
 
         Notification notification = mkForegroundNotification();
         startForeground(NOTIFICATION_ID, notification);
 
         Toast.makeText(this, "sensor logger service starting", Toast.LENGTH_SHORT).show();
-        //return super.onStartCommand(intent, flags, startId);
 
         return mStartMode;
 
