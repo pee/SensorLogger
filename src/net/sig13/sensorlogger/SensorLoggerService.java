@@ -13,6 +13,8 @@ import android.hardware.*;
 import android.os.*;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
+import java.util.List;
 
 public class SensorLoggerService extends IntentService implements OnSharedPreferenceChangeListener {
 
@@ -38,6 +40,11 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
     private int pollingInterval;
     //
     private ContentResolver cr;
+    //
+    private List<Sensor> ambientTemp;
+    private List<Sensor> light;
+    private List<Sensor> pressure;
+    private List<Sensor> humidity;
 
     /*
      *
@@ -104,6 +111,8 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
     public void onCreate() {
         Log.d(TAG, "onCreate:");
 
+        super.onCreate();
+
         Log.d(TAG, "getSharedPreferences");
         //prefs = getSharedPreferences(Constants.SHARED_PREFS_FILE, MODE_PRIVATE);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -111,6 +120,9 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         prefs.registerOnSharedPreferenceChangeListener(this);
 
         sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
+        acquireSensors();
+        dumpSensors();
 
         cr = this.getContentResolver();
         rr = new ReadingReceiver(sm, handler, cr);
@@ -142,9 +154,9 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
 
         Log.d(TAG, "onStartCommand");
 
+        Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
+        return super.onStartCommand(intent, flags, startId);
 
-
-        return mStartMode;
     }
 
     /*
@@ -168,6 +180,44 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         notification.setLatestEventInfo(this, getText(R.string.notification_title), getText(R.string.notification_message), pendingIntent);
 
         return notification;
+
+    }
+
+    private synchronized void acquireSensors() {
+
+        //SensorManager sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
+        ambientTemp = sm.getSensorList(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        light = sm.getSensorList(Sensor.TYPE_LIGHT);
+        pressure = sm.getSensorList(Sensor.TYPE_PRESSURE);
+        humidity = sm.getSensorList(Sensor.TYPE_RELATIVE_HUMIDITY);
+
+
+    }
+
+    /*
+     *
+     *
+     */
+    private void dumpSensors() {
+
+        acquireSensors();
+
+        for (Sensor sensor : ambientTemp) {
+            Log.d(TAG, "ambientTemp:" + sensor.getName() + ":" + sensor.getVendor());
+        }
+
+        for (Sensor sensor : light) {
+            Log.d(TAG, "light:" + sensor.getName() + ":" + sensor.getVendor());
+        }
+
+        for (Sensor sensor : pressure) {
+            Log.d(TAG, "pressure:" + sensor.getName() + ":" + sensor.getVendor());
+        }
+
+        for (Sensor sensor : humidity) {
+            Log.d(TAG, "humidity:" + sensor.getName() + ":" + sensor.getVendor());
+        }
 
     }
 
@@ -207,6 +257,7 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
 
         Log.d(TAG, "unregistering for shared pref changes");
         prefs.unregisterOnSharedPreferenceChangeListener(this);
+        super.onDestroy();
 
     }
 
@@ -216,13 +267,13 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
      */
     @Override
     protected void onHandleIntent(Intent intent) {
-        try {
-            //doWakefulWork(intent);
-            Log.d(TAG, "intent:" + intent);
-        } finally {
-            getLock(this).release();
-        }
-        throw new UnsupportedOperationException("Not supported yet.");
+//        try {
+//            //doWakefulWork(intent);
+//            Log.d(TAG, "intent:" + intent);
+//        } finally {
+//            getLock(this).release();
+//        }
+        Log.d(TAG, "onHandleIntent:" + intent);
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sPref, String key) {

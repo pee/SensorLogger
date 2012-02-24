@@ -140,7 +140,7 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
     @Override
     public void onSensorChanged(SensorEvent event) {
 
-        Log.d(TAG, "onSensorChanged:");
+        //Log.d(TAG, "onSensorChanged:");
         switch (event.sensor.getType()) {
             case Sensor.TYPE_PRESSURE:
                 lastReading = event.values[0];

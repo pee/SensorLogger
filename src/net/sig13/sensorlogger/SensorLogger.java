@@ -23,10 +23,10 @@ public class SensorLogger extends Activity {
     private final static String TAG = "SensorLogger";
     public static final String PREFS_NAME = "SensorLoggerPrefs";
     //
-    private List<Sensor> ambientTemp;
-    private List<Sensor> light;
-    private List<Sensor> pressure;
-    private List<Sensor> humidity;
+//    private List<Sensor> ambientTemp;
+//    private List<Sensor> light;
+//    private List<Sensor> pressure;
+//    private List<Sensor> humidity;
 
     //private PreferenceManager pm;
     @Override
@@ -44,48 +44,11 @@ public class SensorLogger extends Activity {
 
         startService(intent);
 
-        acquireSensors();
-        dumpSensors();
+   
 
     }
 
-    private synchronized void acquireSensors() {
-
-        SensorManager sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-
-        ambientTemp = sm.getSensorList(Sensor.TYPE_AMBIENT_TEMPERATURE);
-        light = sm.getSensorList(Sensor.TYPE_LIGHT);
-        pressure = sm.getSensorList(Sensor.TYPE_PRESSURE);
-        humidity = sm.getSensorList(Sensor.TYPE_RELATIVE_HUMIDITY);
-
-
-    }
-
-    /*
-     *
-     *
-     */
-    private void dumpSensors() {
-
-        acquireSensors();
-
-        for (Sensor sensor : ambientTemp) {
-            Log.d(TAG, "ambientTemp:" + sensor.getName() + ":" + sensor.getVendor());
-        }
-
-        for (Sensor sensor : light) {
-            Log.d(TAG, "light:" + sensor.getName() + ":" + sensor.getVendor());
-        }
-
-        for (Sensor sensor : pressure) {
-            Log.d(TAG, "pressure:" + sensor.getName() + ":" + sensor.getVendor());
-        }
-
-        for (Sensor sensor : humidity) {
-            Log.d(TAG, "humidity:" + sensor.getName() + ":" + sensor.getVendor());
-        }
-
-    }
+ 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
