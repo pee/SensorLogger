@@ -60,8 +60,7 @@
         <meta-data android:name="com.google.android.backup.api_key"
                    android:value="AEdPqrEAAAAIq_ZoNE3rVwLNPJX4U8MeMEaqXfDFQxCWYM0L4A" />
 
-        <activity android:name=".QuickPrefsActivity" android:label="@string/appName"/>
-        <activity android:name=".ShowSettingsActivity" />
+        <activity android:name="net.sig13.sensorlogger.ShowSettingsActivity" />
         <activity android:name="net.sig13.sensorlogger.prefs.MainPrefsActivity"/>
 
     </application>

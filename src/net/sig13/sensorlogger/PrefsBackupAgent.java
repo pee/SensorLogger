@@ -11,7 +11,8 @@ import android.util.Log;
 
 public class PrefsBackupAgent extends BackupAgentHelper implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private static final String LOG_NAME = "SensorLogger:PrefsBackupAgent";
+    private static final String TAG = "SensorLogger:PrefsBackupAgent";
+    //
     private SharedPreferences prefs;
     private BackupManager bm;
 
@@ -19,28 +20,28 @@ public class PrefsBackupAgent extends BackupAgentHelper implements SharedPrefere
     @Override
     public void onCreate() {
 
-        Log.d(LOG_NAME, "onCreate");
+        Log.d(TAG, "onCreate");
 
         SharedPreferencesBackupHelper helper = new SharedPreferencesBackupHelper(this, Constants.SHARED_PREFS_BACKUP_KEY);
         addHelper(Constants.SHARED_PREFS_FILE, helper);
 
-        Log.d(LOG_NAME, "getSharedPreferences");
+        Log.d(TAG, "getSharedPreferences");
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefs.registerOnSharedPreferenceChangeListener(this);
 
-        bm = new BackupManager(this.getBaseContext());
+        bm = new BackupManager(getBaseContext());
 
     }
 
     public void onSharedPreferenceChanged(SharedPreferences pref, String key) {
 
-        Log.d(LOG_NAME, "onSharedPreferenceChanged");
-        Log.d(LOG_NAME, "prefs:" + pref);
-        Log.d(LOG_NAME, "key:" + key);
+        Log.d(TAG, "onSharedPreferenceChanged");
+        Log.d(TAG, "prefs:" + pref);
+        Log.d(TAG, "key:" + key);
 
+        Log.d(TAG, "calling dataChanged()");
         bm.dataChanged();
-
 
 
     }

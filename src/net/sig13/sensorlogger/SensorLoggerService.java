@@ -16,12 +16,11 @@ import android.util.Log;
 
 public class SensorLoggerService extends IntentService implements OnSharedPreferenceChangeListener {
 
-    private static final String SERVICE_NAME = "SensorLoggerService";
+    private static final String TAG = "SensorLoggerService";
     //
     private static final int NOTIFICATION_ID = 0xdeadbeef;
     //
     private SensorManager sm;
-    private boolean listenerRegistered = false;
     //
     int mStartMode = START_STICKY;       // indicates how to behave if the service is killed
     //
@@ -46,7 +45,7 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
      */
     public SensorLoggerService() {
         super("SensorLoggerService");
-        Log.d(SERVICE_NAME, "SensorLoggerService()");
+        Log.d(TAG, "SensorLoggerService()");
 
         _init();
     }
@@ -57,7 +56,7 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
      */
     public SensorLoggerService(String name) {
         super(name);
-        Log.d(SERVICE_NAME, "SensorLoggerService(" + name + ")");
+        Log.d(TAG, "SensorLoggerService(" + name + ")");
 
         _init();
     }
@@ -79,7 +78,7 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
      */
     public static void acquireStaticLock(Context context) {
 
-        Log.d(SERVICE_NAME, "acquireStaticLock");
+        Log.d(TAG, "acquireStaticLock");
         getLock(context).acquire();
     }
 
@@ -89,9 +88,9 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
      */
     synchronized private static PowerManager.WakeLock getLock(Context context) {
 
-        Log.d(SERVICE_NAME, "getLock");
+        Log.d(TAG, "getLock");
         if (lockStatic == null) {
-            Log.d(SERVICE_NAME, "getLock:null");
+            Log.d(TAG, "getLock:null");
             PowerManager mgr = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
 
             lockStatic = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, LOCK_NAME_STATIC);
@@ -103,9 +102,9 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
 
     @Override
     public void onCreate() {
-        Log.d(SERVICE_NAME, "onCreate:");
+        Log.d(TAG, "onCreate:");
 
-        Log.d(SERVICE_NAME, "getSharedPreferences");
+        Log.d(TAG, "getSharedPreferences");
         //prefs = getSharedPreferences(Constants.SHARED_PREFS_FILE, MODE_PRIVATE);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -126,14 +125,6 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
         mgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 60000, 60000, pi);
 
-
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-
-        Log.d(SERVICE_NAME, "onStartCommand");
-
         Notification notification = mkForegroundNotification();
         startForeground(NOTIFICATION_ID, notification);
 
@@ -142,6 +133,16 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
 
         // schedule run of rr
         handler.postDelayed(rr, 0);
+
+
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        Log.d(TAG, "onStartCommand");
+
+
 
         return mStartMode;
     }
@@ -179,7 +180,7 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(SERVICE_NAME, "onBind");
+        Log.d(TAG, "onBind");
         // A client is binding to the service with bindService()
 
 
@@ -188,23 +189,23 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
 
     @Override
     public boolean onUnbind(Intent intent) {
-        Log.d(SERVICE_NAME, "onUnbind");
+        Log.d(TAG, "onUnbind");
         // All clients have unbound with unbindService()
         return mAllowRebind;
     }
 
     @Override
     public void onRebind(Intent intent) {
-        Log.d(SERVICE_NAME, "onRebind");
+        Log.d(TAG, "onRebind");
         // A client is binding to the service with bindService(),
         // after onUnbind() has already been called
     }
 
     @Override
     public void onDestroy() {
-        Log.d(SERVICE_NAME, "onDestroy");
+        Log.d(TAG, "onDestroy");
 
-        Log.d(SERVICE_NAME, "unregistering for shared pref changes");
+        Log.d(TAG, "unregistering for shared pref changes");
         prefs.unregisterOnSharedPreferenceChangeListener(this);
 
     }
@@ -217,7 +218,7 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
     protected void onHandleIntent(Intent intent) {
         try {
             //doWakefulWork(intent);
-            Log.d(SERVICE_NAME, "intent:" + intent);
+            Log.d(TAG, "intent:" + intent);
         } finally {
             getLock(this).release();
         }
@@ -226,9 +227,9 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
 
     public void onSharedPreferenceChanged(SharedPreferences sPref, String key) {
 
-        Log.d(SERVICE_NAME, "onSharedPreferenceChanged");
-        Log.d(SERVICE_NAME, "sPref:" + sPref);
-        Log.d(SERVICE_NAME, "key:" + key);
+        Log.d(TAG, "onSharedPreferenceChanged");
+        Log.d(TAG, "sPref:" + sPref);
+        Log.d(TAG, "key:" + key);
 
         if (key == null) {
             return;
@@ -236,14 +237,13 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
 
         if (key.compareToIgnoreCase(Constants.PREF_KEY_POLLING_INTERVAL) == 0) {
 
-            Log.d(SERVICE_NAME, "Updating polling interval");
+            Log.d(TAG, "Updating polling interval");
 
             String pi = sPref.getString(Constants.PREF_KEY_POLLING_INTERVAL, Constants.DEFAULT_POLLING_DELAY_STRING);
-            //pollingInterval = sPref.getInt(Constants.PREF_KEY_POLLING_INTERVAL, Constants.DEFAULT_POLLING_DELAY);
 
             pollingInterval = Integer.parseInt(pi);
 
-            Log.d(SERVICE_NAME, "Updating polling interval to " + pollingInterval);
+            Log.d(TAG, "Updating polling interval to " + pollingInterval);
             rr.setPollingDelay(pollingInterval);
 
             return;
@@ -252,10 +252,10 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
 
         if (key.compareToIgnoreCase(Constants.PREF_KEY_ENABLE_POLLING) == 0) {
 
-            Log.d(SERVICE_NAME, "Updating polling status");
+            Log.d(TAG, "Updating polling status");
             boolean pauseStatus = sPref.getBoolean(Constants.PREF_KEY_ENABLE_POLLING, false);
 
-            Log.d(SERVICE_NAME, "Updating polling status to " + pauseStatus);
+            Log.d(TAG, "Updating polling status to " + pauseStatus);
             rr.pausePoll(pauseStatus);
 
             return;

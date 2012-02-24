@@ -8,11 +8,10 @@ import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.preference.*;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
+import android.preference.*;
 import android.util.Log;
 import net.sig13.sensorlogger.Constants;
 import net.sig13.sensorlogger.R;
@@ -22,7 +21,7 @@ import net.sig13.sensorlogger.R;
 //
 public class PollingFragment extends PreferenceFragment implements OnPreferenceChangeListener, OnPreferenceClickListener {
 
-    private static final String LOG_NAME = "SL:PollingFragment";
+    private static final String TAG = "SL:PollingFragment";
     private CheckBoxPreference enablePolling;
     private ListPreference pollingInterval;
     private PreferenceManager pm;
@@ -36,7 +35,7 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
-        Log.d(LOG_NAME, "onCreate()");
+        Log.d(TAG, "onCreate()");
 
         addPreferencesFromResource(R.xml.pref_polling);
 
@@ -102,7 +101,7 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Log.d(LOG_NAME, "onActivityCreated");
+        Log.d(TAG, "onActivityCreated");
 
         enablePolling = (CheckBoxPreference) findPreference(Constants.PREF_KEY_ENABLE_POLLING);
         enablePolling.setOnPreferenceChangeListener(this);
@@ -116,7 +115,7 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
     @Override
     public boolean onPreferenceChange(Preference pref, Object newValue) {
 
-        Log.d(LOG_NAME, "onPreferenceChange()");
+        Log.d(TAG, "onPreferenceChange()");
 
         String key = pref.getKey();
         Editor editor;
@@ -135,19 +134,19 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
         editor = prefs.edit();
 
         if (key.equalsIgnoreCase(Constants.PREF_KEY_ENABLE_POLLING)) {
-            Log.d(LOG_NAME, "enablePolling:" + newValue);
+            Log.d(TAG, "enablePolling:" + newValue);
             if (newValue instanceof Boolean) {
-                Log.d(LOG_NAME, "updateing enablePolling preference");
+                Log.d(TAG, "updateing enablePolling preference");
                 editor.putBoolean(Constants.PREF_KEY_ENABLE_POLLING, Boolean.getBoolean(newValue.toString()));
                 changed = true;
 
             } else {
-                Log.d(LOG_NAME, "wanted a boolean preference got:" + newValue.getClass());
+                Log.d(TAG, "wanted a boolean preference got:" + newValue.getClass());
             }
 
         } else if (key.equalsIgnoreCase(Constants.PREF_KEY_POLLING_INTERVAL)) {
 
-            Log.d(LOG_NAME, "pollingInterval:" + newValue);
+            Log.d(TAG, "pollingInterval:" + newValue);
 
             try {
 
@@ -161,21 +160,22 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
 
             } catch (Exception e) {
 
-                Log.d(LOG_NAME, "pollingInterval passed non parseable integer value:" + newValue, e);
+                Log.d(TAG, "pollingInterval passed non parseable integer value:" + newValue, e);
             }
 
         } else {
-            Log.w(LOG_NAME, "Unknown onPreferenceKeyChange:" + key + ":" + newValue);
+            Log.w(TAG, "Unknown onPreferenceKeyChange:" + key + ":" + newValue);
         }
 
         boolean worked = editor.commit();
 
         if (worked == false) {
-            Log.e(LOG_NAME, "Failed to commit preference changes");
+            Log.e(TAG, "Failed to commit preference changes");
         }
 
 
         if (changed == true) {
+            Log.d(TAG, "calling dataChanged()");
             bm.dataChanged();
         }
 
@@ -185,7 +185,7 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
 
     @Override
     public boolean onPreferenceClick(Preference pref) {
-        Log.d(LOG_NAME, "onPreferenceClick()");
+        Log.d(TAG, "onPreferenceClick()");
         return true;
     }
 }

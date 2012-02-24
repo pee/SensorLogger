@@ -5,7 +5,6 @@ package net.sig13.sensorlogger;
 
 import android.app.Activity;
 import android.content.*;
-import android.content.SharedPreferences.Editor;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -13,7 +12,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import java.util.*;
+import java.util.List;
 import net.sig13.sensorlogger.prefs.MainPrefsActivity;
 
 //
@@ -21,7 +20,7 @@ import net.sig13.sensorlogger.prefs.MainPrefsActivity;
 //
 public class SensorLogger extends Activity {
 
-    private final static String LN = "SensorLogger";
+    private final static String TAG = "SensorLogger";
     public static final String PREFS_NAME = "SensorLoggerPrefs";
     //
     private List<Sensor> ambientTemp;
@@ -34,31 +33,12 @@ public class SensorLogger extends Activity {
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
-        Log.d(LN, "onCreate");
+        Log.d(TAG, "onCreate");
 
         // last argument == false == don't replace known prefs
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        Map<String, ?> allPrefs = prefs.getAll();
-
-//        Log.d(LN, "onCreate:dumping keys");
-//        Set<String> keys = allPrefs.keySet();
-//        for (String key : keys) {
-//            Log.i(LN, key + ":" + allPrefs.get(key).getClass()); // Dummy , put break point here
-//        }
-//        Log.d(LN, "onCreate:done dumping keys");
-
-
         PreferenceManager.setDefaultValues(this, R.xml.pref_polling, true);
-
-//        Log.d(LN, "onCreate:dumping keys");
-//        allPrefs = prefs.getAll();
-//
-//        keys = allPrefs.keySet();
-//        for (String key : keys) {
-//            Log.i(LN, key + ":" + allPrefs.get(key).getClass()); // Dummy , put break point here
-//        }
-//        Log.d(LN, "onCreate:done dumping keys");
 
         Intent intent = new Intent(this, SensorLoggerService.class);
 
@@ -69,7 +49,7 @@ public class SensorLogger extends Activity {
 
     }
 
-    private void acquireSensors() {
+    private synchronized void acquireSensors() {
 
         SensorManager sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
@@ -88,21 +68,21 @@ public class SensorLogger extends Activity {
     private void dumpSensors() {
 
         acquireSensors();
-        
+
         for (Sensor sensor : ambientTemp) {
-            Log.d(LN, "ambientTemp:" + sensor.getName() + ":" + sensor.getVendor());
+            Log.d(TAG, "ambientTemp:" + sensor.getName() + ":" + sensor.getVendor());
         }
 
         for (Sensor sensor : light) {
-            Log.d(LN, "light:" + sensor.getName() + ":" + sensor.getVendor());
+            Log.d(TAG, "light:" + sensor.getName() + ":" + sensor.getVendor());
         }
 
         for (Sensor sensor : pressure) {
-            Log.d(LN, "pressure:" + sensor.getName() + ":" + sensor.getVendor());
+            Log.d(TAG, "pressure:" + sensor.getName() + ":" + sensor.getVendor());
         }
 
         for (Sensor sensor : humidity) {
-            Log.d(LN, "humidity:" + sensor.getName() + ":" + sensor.getVendor());
+            Log.d(TAG, "humidity:" + sensor.getName() + ":" + sensor.getVendor());
         }
 
     }
@@ -137,7 +117,7 @@ public class SensorLogger extends Activity {
     protected void onStart() {
         super.onStart();
 
-        Log.d(LN, "onStart");
+        Log.d(TAG, "onStart");
         // The activity is about to become visible.
     }
 
@@ -145,7 +125,7 @@ public class SensorLogger extends Activity {
     protected void onResume() {
         super.onResume();
 
-        Log.d(LN, "onResume");
+        Log.d(TAG, "onResume");
         // The activity has become visible (it is now "resumed").
     }
 
@@ -153,7 +133,7 @@ public class SensorLogger extends Activity {
     protected void onPause() {
         super.onPause();
 
-        Log.d(LN, "onPause");
+        Log.d(TAG, "onPause");
         // Another activity is taking focus (this activity is about to be "paused").
     }
 
@@ -161,7 +141,7 @@ public class SensorLogger extends Activity {
     protected void onStop() {
         super.onStop();
 
-        Log.d(LN, "onStop");
+        Log.d(TAG, "onStop");
         // The activity is no longer visible (it is now "stopped")
     }
 
@@ -169,7 +149,7 @@ public class SensorLogger extends Activity {
     protected void onDestroy() {
         super.onDestroy();
 
-        Log.d(LN, "onDestroy");
+        Log.d(TAG, "onDestroy");
         // The activity is about to be destroyed.
     }
 }
