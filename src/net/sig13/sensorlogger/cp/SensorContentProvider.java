@@ -24,6 +24,7 @@ public class SensorContentProvider extends ContentProvider {
     //
     public static final String AUTHORITY = "net.sig13.sensorlogger.sensordataprovider";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
+    public static final Uri READINGS_URI = Uri.parse("content://" + AUTHORITY + "readings/");
     //
     private static final String BASE_PATH = "readings";
     //

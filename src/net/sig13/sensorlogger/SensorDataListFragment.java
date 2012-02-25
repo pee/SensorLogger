@@ -126,22 +126,8 @@ public class SensorDataListFragment extends ListFragment implements OnQueryTextL
         // First, pick the base URI to use depending on whether we are
         // currently filtering.
         Uri baseUri;
-//        if (mCurFilter != null) {
-//            baseUri = Uri.withAppendedPath(Contacts.CONTENT_FILTER_URI, Uri.encode(mCurFilter));
-//        } else {
-//            baseUri = Contacts.CONTENT_URI;
-//        }
+
         baseUri = Uri.parse("content://" + SensorContentProvider.AUTHORITY + "/readings");
-
-        // Now create and return a CursorLoader that will take care of
-        // creating a Cursor for the data being displayed.
-//        String select = "((" + Contacts.DISPLAY_NAME + " NOTNULL) AND ("
-//                + Contacts.HAS_PHONE_NUMBER + "=1) AND ("
-//                + Contacts.DISPLAY_NAME + " != '' ))";
-
-//        return new CursorLoader(getActivity(), baseUri,
-//                SENSORDATA_SUMMARY_PROJECTION, select, null,
-//                Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC");
 
         //CursorLoader cl = new CursorLoader(getActivity(), baseUri, SENSORDATA_SUMMARY_PROJECTION, null, null, null);
         CursorLoader cl = new CursorLoader(getActivity(), baseUri, null, null, null, null);
@@ -150,13 +136,13 @@ public class SensorDataListFragment extends ListFragment implements OnQueryTextL
 
     }
 
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 
         Log.d(TAG, "onLoadFinished");
 
         // Swap the new cursor in.  (The framework will take care of closing the
         // old cursor once we return.)
-        mAdapter.swapCursor(data);
+        mAdapter.swapCursor(cursor);
     }
 
     public void onLoaderReset(Loader<Cursor> loader) {
@@ -167,5 +153,51 @@ public class SensorDataListFragment extends ListFragment implements OnQueryTextL
         // above is about to be closed.  We need to make sure we are no
         // longer using it.
         mAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+
+        Log.d(TAG, "onCreate");
+        super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
+    public void onDestroy() {
+
+        Log.d(TAG, "onDestroy");
+        super.onDestroy();
+    }
+
+    @Override
+    public void onDetach() {
+        Log.d(TAG, "onDetach");
+        super.onDetach();
+    }
+
+    @Override
+    public void onPause() {
+        Log.d(TAG, "onPause");
+        super.onPause();
+    }
+
+    @Override
+    public void onStart() {
+        Log.d(TAG, "onStart");
+
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        Log.d(TAG, "onStop");
+        super.onStop();
+    }
+
+    @Override
+    public void onResume() {
+        Log.d(TAG, "onResume");
+        super.onResume();
     }
 }

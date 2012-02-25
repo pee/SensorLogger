@@ -49,6 +49,14 @@ public class SensorLogger extends Activity {
         cName = startService(intent);
         Log.d(TAG, "cName:" + cName);
 
+        fm = getFragmentManager();
+
+        FragmentTransaction ft = fm.beginTransaction();
+
+        SensorDataListFragment sdlf = new SensorDataListFragment();
+        ft.add(android.R.id.content, sdlf, "sdlf");
+        ft.commit();
+
     }
 
     /*
@@ -96,14 +104,8 @@ public class SensorLogger extends Activity {
 
         super.onStart();
 
-        fm = getFragmentManager();
 
-        FragmentTransaction ft = fm.beginTransaction();
 
-        SensorDataListFragment sdlf = new SensorDataListFragment();
-        ft.add(android.R.id.content, sdlf, "sdlf");
-
-        ft.commit();
 
     }
 
