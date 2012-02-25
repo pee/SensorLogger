@@ -143,6 +143,12 @@ public class SensorDataListFragment extends ListFragment implements OnQueryTextL
         // Swap the new cursor in.  (The framework will take care of closing the
         // old cursor once we return.)
         mAdapter.swapCursor(cursor);
+
+        if (isResumed()) {
+            setListShown(true);
+        } else {
+            setListShownNoAnimation(true);
+        }
     }
 
     public void onLoaderReset(Loader<Cursor> loader) {

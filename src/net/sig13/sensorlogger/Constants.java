@@ -6,8 +6,9 @@ package net.sig13.sensorlogger;
 // this is ugly, kill me
 public class Constants {
 
-    public final static String SHARED_PREFS_FILE = "user_preferences";
-    public final static String SHARED_PREFS_BACKUP_KEY = "prefs";
+    //public final static String SHARED_PREFS_FILE = "user_preferences";
+    public final static String SHARED_PREFS_FILE = "net.sig13.sensorlogger_preferences";
+    public final static String SHARED_PREFS_KEY = "preferences";
     //
     public final static int MIN_POLLING_DELAY = 60000; // 1 minute
     public final static int MAX_POLLING_DELAY = 60 * 60 * 1000; // 1hr

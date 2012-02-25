@@ -22,12 +22,13 @@ public class PrefsBackupAgent extends BackupAgentHelper implements SharedPrefere
 
         Log.d(TAG, "onCreate");
 
-        SharedPreferencesBackupHelper helper = new SharedPreferencesBackupHelper(this, Constants.SHARED_PREFS_BACKUP_KEY);
-        addHelper(Constants.SHARED_PREFS_FILE, helper);
+        SharedPreferencesBackupHelper helper = new SharedPreferencesBackupHelper(this, Constants.SHARED_PREFS_FILE);
+        addHelper(Constants.SHARED_PREFS_KEY, helper);
 
         Log.d(TAG, "getSharedPreferences");
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        //prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs = this.getSharedPreferences(Constants.SHARED_PREFS_FILE, 0);
         prefs.registerOnSharedPreferenceChangeListener(this);
 
         bm = new BackupManager(getBaseContext());

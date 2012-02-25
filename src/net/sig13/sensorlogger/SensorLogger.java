@@ -40,8 +40,6 @@ public class SensorLogger extends Activity {
         Log.d(TAG, "onCreate");
 
         // last argument == false == don't replace known prefs
-        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
         PreferenceManager.setDefaultValues(this, R.xml.pref_polling, true);
 
         Intent intent = new Intent(this, SensorLoggerService.class);
