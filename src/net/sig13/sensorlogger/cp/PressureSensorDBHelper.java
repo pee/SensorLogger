@@ -18,6 +18,7 @@ public class PressureSensorDBHelper extends SQLiteOpenHelper {
 
     public PressureSensorDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+
     }
 
     // Method is called during creation of the database

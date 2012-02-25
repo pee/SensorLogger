@@ -214,7 +214,7 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
     @Override
     public void onAccuracyChanged(Sensor sensor, int value) {
 
-        Log.d(TAG, "onAccuracyChanged:" + sensor + ":value:" + value);
+        Log.d(TAG, "onAccuracyChanged:" + sensor.getName() + ":" + sensor.getVendor() + ":value:" + value);
 
     }
 
