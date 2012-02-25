@@ -195,9 +195,6 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
         // Defines an object to contain the new values to insert
         ContentValues mNewValues = new ContentValues();
 
-        /*
-         * Sets the values of each column and inserts the word. The arguments to the "put" method are "column name" and "value"
-         */
         mNewValues.put(PressureDataTable.COLUMN_TIME, System.currentTimeMillis());
         mNewValues.put(PressureDataTable.COLUMN_VALUE, newReading);
 

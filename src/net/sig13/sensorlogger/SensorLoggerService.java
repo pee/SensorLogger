@@ -45,6 +45,8 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
     private List<Sensor> light;
     private List<Sensor> pressure;
     private List<Sensor> humidity;
+    //
+    private Notification notification;
 
     /*
      *
@@ -143,6 +145,13 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         // schedule run of rr
         handler.postDelayed(rr, 0);
 
+        Toast.makeText(this, "starting sensor logger service", Toast.LENGTH_SHORT).show();
+
+        notification = mkForegroundNotification();
+
+        startForeground(NOTIFICATION_ID, notification);
+
+
     }
 
     @Override
@@ -150,10 +159,7 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
 
         Log.d(TAG, "onStartCommand");
 
-        Notification notification = mkForegroundNotification();
-        startForeground(NOTIFICATION_ID, notification);
-
-        Toast.makeText(this, "sensor logger service starting", Toast.LENGTH_SHORT).show();
+        // startForeground(NOTIFICATION_ID, notification);
 
         return mStartMode;
 

@@ -3,17 +3,21 @@
 //
 package net.sig13.sensorlogger;
 
-import android.app.Activity;
+import android.app.*;
 import android.content.*;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import java.util.List;
+import android.widget.CursorAdapter;
+import android.widget.SimpleCursorAdapter;
+import net.sig13.sensorlogger.cp.PressureDataTable;
+import net.sig13.sensorlogger.cp.SensorContentProvider;
 import net.sig13.sensorlogger.prefs.MainPrefsActivity;
+import net.sig13.sensorlogger.prefs.PollingFragment;
 
 //
 //
@@ -21,14 +25,14 @@ import net.sig13.sensorlogger.prefs.MainPrefsActivity;
 public class SensorLogger extends Activity {
 
     private final static String TAG = "SensorLogger";
+    //
     public static final String PREFS_NAME = "SensorLoggerPrefs";
     //
-//    private List<Sensor> ambientTemp;
-//    private List<Sensor> light;
-//    private List<Sensor> pressure;
-//    private List<Sensor> humidity;
+    private SimpleCursorAdapter adapter;
+    private LoaderManager lm;
+    private FragmentManager fm;
+    private ComponentName cName;
 
-    //private PreferenceManager pm;
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
@@ -36,27 +40,34 @@ public class SensorLogger extends Activity {
         Log.d(TAG, "onCreate");
 
         // last argument == false == don't replace known prefs
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         PreferenceManager.setDefaultValues(this, R.xml.pref_polling, true);
 
         Intent intent = new Intent(this, SensorLoggerService.class);
 
-        startService(intent);
-
-   
+        cName = startService(intent);
+        Log.d(TAG, "cName:" + cName);
 
     }
 
- 
-
+    /*
+     *
+     *
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
+        Log.d(TAG, "onCreateOptionsMenu");
 
         menu.add(Menu.NONE, 0, 0, "settings");
         return super.onCreateOptionsMenu(menu);
     }
 
+    /*
+     *
+     *
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -78,10 +89,22 @@ public class SensorLogger extends Activity {
 
     @Override
     protected void onStart() {
-        super.onStart();
+
+        // The activity is about to become visible.
 
         Log.d(TAG, "onStart");
-        // The activity is about to become visible.
+
+        super.onStart();
+
+        fm = getFragmentManager();
+
+        FragmentTransaction ft = fm.beginTransaction();
+
+        SensorDataListFragment sdlf = new SensorDataListFragment();
+        ft.add(android.R.id.content, sdlf, "sdlf");
+
+        ft.commit();
+
     }
 
     @Override

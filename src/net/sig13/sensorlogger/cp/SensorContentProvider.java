@@ -6,7 +6,6 @@ package net.sig13.sensorlogger.cp;
 //
 import android.content.*;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
