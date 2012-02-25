@@ -22,6 +22,8 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
     //
     private static final int NOTIFICATION_ID = 0xdeadbeef;
     //
+    private static final int POLLER_START_DELAY = 5000; //  5 seconds
+    //
     private SensorManager sm;
     //
     int mStartMode = START_STICKY;       // indicates how to behave if the service is killed
@@ -142,24 +144,23 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         // clear pending scheduled handle events for rr
         handler.removeCallbacks(rr);
 
-        // schedule run of rr
-        handler.postDelayed(rr, 0);
+        // schedule run of rr in POLLER_START_DELAY ms
+        handler.postDelayed(rr, POLLER_START_DELAY);
 
         Toast.makeText(this, "starting sensor logger service", Toast.LENGTH_SHORT).show();
 
-        notification = mkForegroundNotification();
+        mkForegroundNotification();
 
         startForeground(NOTIFICATION_ID, notification);
 
 
     }
 
+    // FIXME: do i need this anymore ? ;p
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         Log.d(TAG, "onStartCommand");
-
-        // startForeground(NOTIFICATION_ID, notification);
 
         return mStartMode;
 
@@ -169,7 +170,7 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
      *
      *
      */
-    private Notification mkForegroundNotification() {
+    private void mkForegroundNotification() {
 
         Intent notificationIntent = new Intent(this, SensorLogger.class);
 
@@ -182,22 +183,17 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         builder.setSmallIcon(R.drawable.ic_stat_notif_small_icon);
         builder.setOngoing(true);
 
-        Notification notification = builder.getNotification();
+        notification = builder.getNotification();
         notification.setLatestEventInfo(this, getText(R.string.notification_title), getText(R.string.notification_message), pendingIntent);
-
-        return notification;
 
     }
 
     private synchronized void acquireSensors() {
 
-        //SensorManager sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-
         ambientTemp = sm.getSensorList(Sensor.TYPE_AMBIENT_TEMPERATURE);
         light = sm.getSensorList(Sensor.TYPE_LIGHT);
         pressure = sm.getSensorList(Sensor.TYPE_PRESSURE);
         humidity = sm.getSensorList(Sensor.TYPE_RELATIVE_HUMIDITY);
-
 
     }
 
@@ -269,7 +265,7 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
 
     /*
      *
-     *
+     * FIXME: do I need this?
      */
     @Override
     protected void onHandleIntent(Intent intent) {

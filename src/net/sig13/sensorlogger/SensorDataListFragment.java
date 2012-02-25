@@ -131,7 +131,7 @@ public class SensorDataListFragment extends ListFragment implements OnQueryTextL
 //        } else {
 //            baseUri = Contacts.CONTENT_URI;
 //        }
-        baseUri = Uri.parse(SensorContentProvider.AUTHORITY + "/readings");
+        baseUri = Uri.parse("content://" + SensorContentProvider.AUTHORITY + "/readings");
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
