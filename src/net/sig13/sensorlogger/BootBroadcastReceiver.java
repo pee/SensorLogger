@@ -15,13 +15,13 @@ import android.util.Log;
  */
 public class BootBroadcastReceiver extends BroadcastReceiver {
 
-    private final static String LOG_NAME = "SensorLoggerService:BBR";
+    private final static String TAG = "SLogger:BBR";
     private static final int PERIOD = 60000;
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        Log.i(LOG_NAME , "onReceive");
+        Log.i(TAG, "onReceive");
 
         // Start the pressure logger service when the phone boots
         context.startService(new Intent(context, SensorLoggerService.class));
@@ -30,7 +30,7 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
         Intent i = new Intent(context, OnAlarmReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
 
-        Log.i(LOG_NAME, "scheduling alarms");
+        Log.i(TAG, "scheduling alarms");
         mgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 60000, PERIOD, pi);
 
 

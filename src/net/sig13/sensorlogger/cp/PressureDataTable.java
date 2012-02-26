@@ -11,7 +11,7 @@ import android.util.Log;
 //
 public class PressureDataTable {
 
-    private final static String TAG = "SL:PressureDataTable";
+    private final static String TAG = "SLogger:PressureDataTable";
     // Database table
     public static final String TABLE_PRESSURE = "pressureData";
     //

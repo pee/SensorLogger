@@ -5,8 +5,6 @@ package net.sig13.sensorlogger;
 
 import android.app.backup.*;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
 import android.util.Log;
 
 public class PrefsBackupAgent extends BackupAgentHelper implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -16,7 +14,11 @@ public class PrefsBackupAgent extends BackupAgentHelper implements SharedPrefere
     private SharedPreferences prefs;
     private BackupManager bm;
 
-    // Allocate a helper and add it to the backup agent
+    /**
+     *
+     * Allocate a helper and add it to the backup agent
+     *
+     */
     @Override
     public void onCreate() {
 
@@ -35,6 +37,12 @@ public class PrefsBackupAgent extends BackupAgentHelper implements SharedPrefere
 
     }
 
+    /**
+     *
+     * @param pref
+     * @param key
+     */
+    @Override
     public void onSharedPreferenceChanged(SharedPreferences pref, String key) {
 
         Log.d(TAG, "onSharedPreferenceChanged");

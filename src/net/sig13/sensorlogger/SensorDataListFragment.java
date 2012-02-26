@@ -22,18 +22,14 @@ import android.util.Log;
 import android.view.*;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.*;
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
 import net.sig13.sensorlogger.cp.PressureDataTable;
 import net.sig13.sensorlogger.cp.SensorContentProvider;
 
 public class SensorDataListFragment extends ListFragment implements OnQueryTextListener, LoaderManager.LoaderCallbacks<Cursor> {
 
-    private final static String TAG = "SL:SensorDataListFrag";
+    private final static String TAG = "SLogger:SensorDataListFrag";
     // This is the Adapter being used to display the list's data.
     private SimpleCursorAdapter mAdapter;
-    // If non-null, this is the current filter the user has provided.
-    private String mCurFilter;
     //
     private LoaderManager lm;
     //
@@ -89,6 +85,12 @@ public class SensorDataListFragment extends ListFragment implements OnQueryTextL
         item.setActionView(sv);
     }
 
+    /**
+     *
+     * @param newText
+     * @return
+     */
+    @Override
     public boolean onQueryTextChange(String newText) {
 
         Log.d(TAG, "onQueryTextChange");
@@ -96,11 +98,16 @@ public class SensorDataListFragment extends ListFragment implements OnQueryTextL
         // Called when the action bar search text has changed.  Update
         // the search filter, and restart the loader to do a new query
         // with this filter.
-        mCurFilter = !TextUtils.isEmpty(newText) ? newText : null;
+        //mCurFilter = !TextUtils.isEmpty(newText) ? newText : null;
         getLoaderManager().restartLoader(0, null, this);
         return true;
     }
 
+    /**
+     *
+     * @param query
+     * @return
+     */
     @Override
     public boolean onQueryTextSubmit(String query) {
         Log.d(TAG, "onQueryTextSubmit");
@@ -108,15 +115,21 @@ public class SensorDataListFragment extends ListFragment implements OnQueryTextL
         return true;
     }
 
+//    @Override
+//    public void onListItemClick(ListView l, View v, int position, long id) {
+//
+//        Log.d(TAG, "oonListItemClick");
+//
+//        // Insert desired behavior here.
+//        Log.i(TAG, "Item clicked: " + id);
+//    }
+    /**
+     *
+     * @param id
+     * @param args
+     * @return
+     */
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-
-        Log.d(TAG, "oonListItemClick");
-
-        // Insert desired behavior here.
-        Log.i(TAG, "Item clicked: " + id);
-    }
-
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
         Log.d(TAG, "onCreateLoader");
@@ -136,6 +149,12 @@ public class SensorDataListFragment extends ListFragment implements OnQueryTextL
 
     }
 
+    /**
+     *
+     * @param loader
+     * @param cursor
+     */
+    @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 
         Log.d(TAG, "onLoadFinished");
@@ -151,6 +170,11 @@ public class SensorDataListFragment extends ListFragment implements OnQueryTextL
         }
     }
 
+    /**
+     *
+     * @param loader
+     */
+    @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
         Log.d(TAG, "onLoaderReset");
@@ -161,49 +185,15 @@ public class SensorDataListFragment extends ListFragment implements OnQueryTextL
         mAdapter.swapCursor(null);
     }
 
+    /**
+     *
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
-    }
-
-    @Override
-    public void onDestroy() {
-
-        Log.d(TAG, "onDestroy");
-        super.onDestroy();
-    }
-
-    @Override
-    public void onDetach() {
-        Log.d(TAG, "onDetach");
-        super.onDetach();
-    }
-
-    @Override
-    public void onPause() {
-        Log.d(TAG, "onPause");
-        super.onPause();
-    }
-
-    @Override
-    public void onStart() {
-        Log.d(TAG, "onStart");
-
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        Log.d(TAG, "onStop");
-        super.onStop();
-    }
-
-    @Override
-    public void onResume() {
-        Log.d(TAG, "onResume");
-        super.onResume();
     }
 }

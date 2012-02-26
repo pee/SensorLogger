@@ -4,27 +4,22 @@
 package net.sig13.sensorlogger;
 
 import android.app.*;
-import android.content.*;
-import android.database.Cursor;
-import android.net.Uri;
+import android.content.ComponentName;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.CursorAdapter;
 import android.widget.SimpleCursorAdapter;
-import net.sig13.sensorlogger.cp.PressureDataTable;
-import net.sig13.sensorlogger.cp.SensorContentProvider;
 import net.sig13.sensorlogger.prefs.MainPrefsActivity;
-import net.sig13.sensorlogger.prefs.PollingFragment;
 
 //
 //
 //
 public class SensorLogger extends Activity {
 
-    private final static String TAG = "SensorLogger";
+    private final static String TAG = "SLogger";
     //
     public static final String PREFS_NAME = "SensorLoggerPrefs";
     //
@@ -91,51 +86,5 @@ public class SensorLogger extends Activity {
     private void showOptions() {
         Intent intent = new Intent(this, MainPrefsActivity.class);
         this.startActivity(intent);
-    }
-
-    @Override
-    protected void onStart() {
-
-        // The activity is about to become visible.
-
-        Log.d(TAG, "onStart");
-
-        super.onStart();
-
-
-
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        Log.d(TAG, "onResume");
-        // The activity has become visible (it is now "resumed").
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        Log.d(TAG, "onPause");
-        // Another activity is taking focus (this activity is about to be "paused").
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        Log.d(TAG, "onStop");
-        // The activity is no longer visible (it is now "stopped")
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        Log.d(TAG, "onDestroy");
-        // The activity is about to be destroyed.
     }
 }

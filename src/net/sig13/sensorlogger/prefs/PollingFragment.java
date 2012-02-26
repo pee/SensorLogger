@@ -21,7 +21,8 @@ import net.sig13.sensorlogger.R;
 //
 public class PollingFragment extends PreferenceFragment implements OnPreferenceChangeListener, OnPreferenceClickListener {
 
-    private static final String TAG = "SL:PollingFragment";
+    private static final String TAG = "SLogger:PollingFragment";
+    //
     private CheckBoxPreference enablePolling;
     private ListPreference pollingInterval;
     private PreferenceManager pm;

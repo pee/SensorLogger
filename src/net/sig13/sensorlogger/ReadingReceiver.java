@@ -18,7 +18,7 @@ import net.sig13.sensorlogger.cp.SensorContentProvider;
 //
 public class ReadingReceiver extends Service implements SensorEventListener, Runnable {
 
-    private final static String TAG = "SLogger:SLoggerService:RR";
+    private final static String TAG = "SLoggerService:RR";
     //
 
     public enum PollStatus {
@@ -72,27 +72,26 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
 
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        Log.d(TAG, "onCreate");
-
-        //cr = getContentResolver();
-
-
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        Log.d(TAG, "onDestroy");
-    }
-
-    /*
+//    @Override
+//    public void onCreate() {
+//        super.onCreate();
+//
+//        Log.d(TAG, "onCreate");
+//
+//        //cr = getContentResolver();
+//
+//
+//    }
+//
+//    @Override
+//    public void onDestroy() {
+//        super.onDestroy();
+//
+//        Log.d(TAG, "onDestroy");
+//    }
+    /**
      *
-     *
+     * @param pollingDelay
      */
     public void setPollingDelay(int pollingDelay) {
 
@@ -145,14 +144,13 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
 //        pausePoll = status;
 //
 //    }
-
-    /*
+    /**
      *
-     *
+     * @param pollStatus
      */
     public void setPollStatus(PollStatus pollStatus) {
 
-        int newDelay = 0;
+        int newDelay;
 
         Log.d(TAG, "setPollStatus:" + pollStatus);
 
@@ -180,11 +178,9 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
 //    public boolean isPaused() {
 //        return pausePoll;
 //    }
-
-    /*
+    /**
      *
-     *
-     *
+     * @param event
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -198,9 +194,9 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
         }
     }
 
-    /*
+    /**
      *
-     *
+     * @param reading
      */
     private synchronized void addReading(double reading) {
 
@@ -256,10 +252,10 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
 
     }
 
-    /*
+    /**
      *
-     *
-     *
+     * @param sensor
+     * @param value
      */
     @Override
     public void onAccuracyChanged(Sensor sensor, int value) {
@@ -268,9 +264,7 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
 
     }
 
-    /*
-     *
-     *
+    /**
      *
      */
     @Override
@@ -351,8 +345,7 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
          *
          */
         @Override
-        public void onServiceConnected(ComponentName className,
-                IBinder service) {
+        public void onServiceConnected(ComponentName className, IBinder service) {
             // We've bound to LocalService, cast the IBinder and get LocalService instance
             LocalBinder binder = (LocalBinder) service;
             sls = binder.getService();
@@ -364,7 +357,7 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
          *
          */
         @Override
-        public void onServiceDisconnected(ComponentName arg0) {
+        public void onServiceDisconnected(ComponentName name) {
             mBound = false;
         }
     };

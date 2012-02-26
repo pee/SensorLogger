@@ -17,7 +17,7 @@ import java.util.HashSet;
 //
 public class SensorContentProvider extends ContentProvider {
 
-    private final static String TAG = "SL:SensorContentProvider:";
+    private final static String TAG = "SLogger:SensorContentProvider:";
     //
     private static final int READINGS = 1;
     private static final int READING_ID = 2;

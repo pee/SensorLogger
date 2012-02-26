@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class SensorLoggerService extends IntentService implements OnSharedPreferenceChangeListener {
 
-    private static final String TAG = "SLogger:SLoggerService";
+    private static final String TAG = "SLoggerService";
     //
     private static final int NOTIFICATION_ID = 0xdeadbeef;
     //
@@ -64,7 +64,6 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         super("SensorLoggerService");
         Log.d(TAG, "SensorLoggerService()");
 
-        _init();
     }
 
     /*
@@ -74,20 +73,7 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
     public SensorLoggerService(String name) {
         super(name);
         Log.d(TAG, "SensorLoggerService(" + name + ")");
-
-        _init();
     }
-
-    /*
-     *
-     * fucking lazy!
-     *
-     */
-    private void _init() {
-//        sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-//        rr = new ReadingReceiver(sm, handler);
-    }
-
 
     /*
      *

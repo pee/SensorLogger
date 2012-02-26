@@ -8,20 +8,20 @@ import android.util.Log;
 
 /**
  *
- * @author pee
+ *
  */
 public class OnAlarmReceiver extends BroadcastReceiver {
 
-    private final static String LOG_NAME = "SensorLoggerService:OAReceiver";
+    private final static String TAG = "SLoggerService:OAReceiver";
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        Log.d(LOG_NAME, "onReceive");
+        Log.d(TAG, "onReceive");
 
         SensorLoggerService.acquireStaticLock(context);
 
-        Log.d(LOG_NAME, "starting SensorLoggerService");
+        Log.d(TAG, "starting SensorLoggerService");
         context.startService(new Intent(context, SensorLoggerService.class));
 
     }

@@ -6,13 +6,12 @@ package net.sig13.sensorlogger.cp;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.net.Uri;
 import android.util.Log;
-import net.sig13.sensorlogger.Constants;
 
 public class PressureSensorDBHelper extends SQLiteOpenHelper {
 
-    private static final String TAG = "SL:SQLiteOpenHelper";
+    private static final String TAG = "SLogger:SQLiteOpenHelper";
+    //
     private static final String DATABASE_NAME = "pressuredata.db";
     private static final int DATABASE_VERSION = 1;
 
