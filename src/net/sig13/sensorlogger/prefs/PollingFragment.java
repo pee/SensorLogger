@@ -30,17 +30,14 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
     private BackupManager bm;
     private Activity activity;
     private Context context;
-    private PreferenceScreen root;
 
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
-        Log.d(TAG, "onCreate()");
+        Log.d(TAG, "onCreate");
 
         addPreferencesFromResource(R.xml.pref_polling);
-
-        //setPreferenceScreen(buildPreferenceTree());
 
         pm = getPreferenceManager();
         prefs = pm.getSharedPreferences();
@@ -53,56 +50,17 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
 
     }
 
-    private PreferenceScreen buildPreferenceTree() {
-
-        root = pm.createPreferenceScreen(context);
-
-        PreferenceCategory pCat = new PreferenceCategory(context);
-        pCat.setTitle("Polling");
-        root.addPreference(pCat);
-
-        CheckBoxPreference pPref = new CheckBoxPreference(context);
-        pPref.setKey("enable_polling");
-        pPref.setTitle("enable_polling");
-        pPref.setSummary("enable polling of sensor data");
-        pPref.setDefaultValue(Boolean.TRUE);
-
-        root.addPreference(pPref);
-
-        ListPreference lp = new ListPreference(context);
-        lp.setKey("polling_interval");
-        lp.setTitle("polling interval");
-        lp.setSummary("select polling interval for sensors");
-        lp.setDependency("enable_polling");
-        lp.setDialogTitle("polling interval");
-        lp.setEntries(R.array.pollingIntervals);
-        lp.setEntryValues(R.array.pollingIntervalValues);
-        lp.setDefaultValue(Integer.decode("30000"));
-
-
-
-        root.addPreference(lp);
-
-//                <ListPreference
-//            android:key="polling_interval"
-//            android:title="polling_interval_title"
-//            android:summary="polling_interval_summary"
-//            android:entries="@array/pollingIntervals"
-//            android:entryValues="@array/pollingIntervalValues"
-//            android:defaultValue="300000"
-//            android:dialogTitle="dialogTitle_polling_interval"
-//            android:dependency="enable_polling"
-//            />
-
-        return root;
-
-    }
-
+    /**
+     *
+     * @param savedInstanceState
+     */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
 
         Log.d(TAG, "onActivityCreated");
+
+        super.onActivityCreated(savedInstanceState);
+
 
         enablePolling = (CheckBoxPreference) findPreference(Constants.PREF_KEY_ENABLE_POLLING);
         enablePolling.setOnPreferenceChangeListener(this);
@@ -113,6 +71,12 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
 
     }
 
+    /**
+     *
+     * @param pref
+     * @param newValue
+     * @return
+     */
     @Override
     public boolean onPreferenceChange(Preference pref, Object newValue) {
 
@@ -187,6 +151,11 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
         return true;
     }
 
+    /**
+     *
+     * @param pref
+     * @return
+     */
     @Override
     public boolean onPreferenceClick(Preference pref) {
         Log.d(TAG, "onPreferenceClick()");

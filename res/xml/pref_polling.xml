@@ -7,19 +7,19 @@
 
         <CheckBoxPreference
             android:key="enable_polling"
-            android:title="enable_polling_checkbox_title"
-            android:summary="enable_polling_checkbox_summary"
+            android:title="Poll Sensors"
+            android:summary="If checked the sensor logging service will poll sensors periodically"
             android:defaultValue="true"
             />
 
         <ListPreference
             android:key="polling_interval"
-            android:title="polling_interval_title"
-            android:summary="polling_interval_summary"
+            android:title="Polling Interval"
+            android:summary="poll sensors every N seconds"
             android:entries="@array/pollingIntervals"
             android:entryValues="@array/pollingIntervalValues"
             android:defaultValue="300000"
-            android:dialogTitle="dialogTitle_polling_interval"
+            android:dialogTitle="Time between sensor polls"
             android:dependency="enable_polling"
             android:numeric="integer"
             />
@@ -27,51 +27,6 @@
 
 
     </PreferenceCategory>
-
-    <!--PreferenceCategory
-        android:key="key_category_quality"
-        android:title="@string/password_quality_category" >
-
-        <ListPreference
-            android:key="key_quality"
-            android:title="@string/password_quality"
-            android:entries="@array/password_qualities"
-            android:dialogTitle="@string/password_quality" />
-        <EditTextPreference
-            android:key="key_minimum_length"
-            android:title="@string/password_minimum_length"
-            android:dialogTitle="@string/password_minimum_length"
-            android:inputType="number" />
-        <EditTextPreference
-            android:key="key_minimum_letters"
-            android:title="@string/password_minimum_letters"
-            android:dialogTitle="@string/password_minimum_letters" />
-        <EditTextPreference
-            android:key="key_minimum_numeric"
-            android:title="@string/password_minimum_numeric"
-            android:dialogTitle="@string/password_minimum_numeric"
-            android:inputType="number"  />
-        <EditTextPreference
-            android:key="key_minimum_lower_case"
-            android:title="@string/password_minimum_lower_case"
-            android:dialogTitle="@string/password_minimum_lower_case"
-            android:inputType="number"  />
-        <EditTextPreference
-            android:key="key_minimum_upper_case"
-            android:title="@string/password_minimum_upper_case"
-            android:dialogTitle="@string/password_minimum_upper_case"
-            android:inputType="number"  />
-        <EditTextPreference
-            android:key="key_minimum_symbols"
-            android:title="@string/password_minimum_symbols"
-            android:dialogTitle="@string/password_minimum_symbols"
-            android:inputType="number"  />
-        <EditTextPreference
-            android:key="key_minimum_non_letter"
-            android:title="@string/password_minimum_non_letter"
-            android:dialogTitle="@string/password_minimum_non_letter"
-            android:inputType="number"  />
-    </PreferenceCategory-->
 
 </PreferenceScreen>
 
