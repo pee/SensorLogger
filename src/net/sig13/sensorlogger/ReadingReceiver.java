@@ -18,7 +18,14 @@ import net.sig13.sensorlogger.cp.SensorContentProvider;
 //
 public class ReadingReceiver extends Service implements SensorEventListener, Runnable {
 
-    private final static String TAG = "SensorLoggerService:RR";
+    private final static String TAG = "SLogger:SLoggerService:RR";
+    //
+
+    public enum PollStatus {
+
+        Paused, Run
+    };
+    //
     public final static int DEFAULT_POLLING_DELAY = 60000;
     //
     private final static int READINGS_SIZE = 5;
@@ -29,7 +36,7 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
     //
     private Handler handler;
     //
-    private boolean pausePoll = false;
+    //private volatile boolean pausePoll = false;
     //
     private SensorLoggerService sls;
     //
@@ -40,6 +47,8 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
     private int pollingDelay = DEFAULT_POLLING_DELAY;
     //
     private ContentResolver cr;
+    //
+    private volatile PollStatus pollStatus = PollStatus.Run;
 
     /*
      *
@@ -110,27 +119,67 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
 
         //
         if (pollingDelay == 0) {
-            pausePoll = true;
+            //pausePoll = true;
+            pollStatus = PollStatus.Paused;
         }
 
         if (pollingDelay > 0) {
-            pausePoll = false;
+            //pausePoll = false;
+            pollStatus = PollStatus.Run;
             handler.postDelayed(this, pollingDelay);
 
         }
     }
 
+//    /*
+//     *
+//     *
+//     */
+//    public void setPausePoll(boolean status) {
+//
+//        Log.d(TAG, "pausePoll:" + pausePoll + ":" + status);
+//
+//
+//        handler.removeCallbacks(this);
+//
+//        pausePoll = status;
+//
+//    }
+
     /*
      *
      *
      */
-    public void pausePoll(boolean status) {
-        pausePoll = status;
+    public void setPollStatus(PollStatus pollStatus) {
+
+        int newDelay = 0;
+
+        Log.d(TAG, "setPollStatus:" + pollStatus);
+
+        handler.removeCallbacks(this);
+
+        this.pollStatus = pollStatus;
+
+        switch (pollStatus) {
+            case Run:
+                newDelay = pollingDelay;
+                break;
+            case Paused:
+                newDelay = Constants.PAUSE_POLLING_DELAY;
+                break;
+            default:
+                Log.d(TAG, "***Unhandled enum status***");
+                newDelay = Constants.PAUSE_POLLING_DELAY;
+
+        }
+
+        handler.postDelayed(this, newDelay);
+
     }
 
-    public boolean isPaused() {
-        return pausePoll;
-    }
+//    public boolean isPaused() {
+//        return pausePoll;
+//    }
 
     /*
      *
@@ -188,21 +237,22 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
     }
 
     private void updateRecord(double newReading) {
-        // Defines a new Uri object that receives the result of the insertion
-        Uri mNewUri;
 
+        Uri mNewUri;
 
         // Defines an object to contain the new values to insert
         ContentValues mNewValues = new ContentValues();
 
-        mNewValues.put(PressureDataTable.COLUMN_TIME, System.currentTimeMillis());
+        long now = System.currentTimeMillis();
+
+        mNewValues.put(PressureDataTable.COLUMN_TIME, now);
         mNewValues.put(PressureDataTable.COLUMN_VALUE, newReading);
 
         Uri CONTENT_URI = Uri.parse("content://" + SensorContentProvider.AUTHORITY + "/readings");
 
         mNewUri = cr.insert(CONTENT_URI, mNewValues);
 
-        Log.d(TAG, "mNewUri:" + mNewUri);
+        Log.d(TAG, "mNewUri:" + mNewUri + ":" + now);
 
     }
 
@@ -230,7 +280,8 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
 
         long now = SystemClock.uptimeMillis();
 
-        if (pausePoll == false) {
+        if (pollStatus == PollStatus.Run) {
+
             setupBarometer();
 
             readCount = 0;

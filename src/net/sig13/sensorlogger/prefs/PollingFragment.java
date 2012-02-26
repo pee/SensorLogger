@@ -115,7 +115,7 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
     @Override
     public boolean onPreferenceChange(Preference pref, Object newValue) {
 
-        Log.d(TAG, "onPreferenceChange()");
+        Log.d(TAG, "onPreferenceChange:" + pref.getKey());
 
         String key = pref.getKey();
         Editor editor;
@@ -134,9 +134,12 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
         editor = prefs.edit();
 
         if (key.equalsIgnoreCase(Constants.PREF_KEY_ENABLE_POLLING)) {
+
             Log.d(TAG, "enablePolling:" + newValue);
             if (newValue instanceof Boolean) {
+
                 Log.d(TAG, "updateing enablePolling preference");
+
                 editor.putBoolean(Constants.PREF_KEY_ENABLE_POLLING, Boolean.getBoolean(newValue.toString()));
                 changed = true;
 

@@ -11,7 +11,7 @@ import android.util.Log;
 
 public class PrefsBackupAgent extends BackupAgentHelper implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private static final String TAG = "SensorLogger:PrefsBackupAgent";
+    private static final String TAG = "SLogger:PrefsBackupAgent";
     //
     private SharedPreferences prefs;
     private BackupManager bm;

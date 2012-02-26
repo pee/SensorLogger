@@ -9,16 +9,22 @@ import android.content.*;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.hardware.*;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.*;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 import java.util.List;
 
+/*
+ *
+ *
+ *
+ */
 public class SensorLoggerService extends IntentService implements OnSharedPreferenceChangeListener {
 
-    private static final String TAG = "SensorLoggerService";
+    private static final String TAG = "SLogger:SLoggerService";
     //
     private static final int NOTIFICATION_ID = 0xdeadbeef;
     //
@@ -111,6 +117,10 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         return (lockStatic);
     }
 
+    /**
+     *
+     *
+     */
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate:");
@@ -131,8 +141,8 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         cr = this.getContentResolver();
         rr = new ReadingReceiver(sm, handler, cr);
         String piString = prefs.getString(Constants.PREF_KEY_POLLING_INTERVAL, Constants.DEFAULT_POLLING_DELAY_STRING);
-        pollingInterval = Integer.parseInt(piString);
-        rr.setPollingDelay(pollingInterval);
+        setPollingInterval(Integer.parseInt(piString));
+        rr.setPollingDelay(getPollingInterval());
 
         Context context = getBaseContext();
         // The service is being created
@@ -188,6 +198,10 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
 
     }
 
+    /*
+     *
+     *
+     */
     private synchronized void acquireSensors() {
 
         ambientTemp = sm.getSensorList(Sensor.TYPE_AMBIENT_TEMPERATURE);
@@ -223,6 +237,10 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
 
     }
 
+    /*
+     *
+     *
+     */
     private Bitmap mkLargeIcon() {
 
         Bitmap raw = BitmapFactory.decodeResource(getResources(), R.drawable.icon);
@@ -230,6 +248,10 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         return raw;
     }
 
+    /*
+     *
+     *
+     */
     @Override
     public IBinder onBind(Intent intent) {
         Log.d(TAG, "onBind");
@@ -239,6 +261,10 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         return localBinder;
     }
 
+    /*
+     *
+     *
+     */
     @Override
     public boolean onUnbind(Intent intent) {
         Log.d(TAG, "onUnbind");
@@ -246,6 +272,10 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         return mAllowRebind;
     }
 
+    /*
+     *
+     *
+     */
     @Override
     public void onRebind(Intent intent) {
         Log.d(TAG, "onRebind");
@@ -253,6 +283,10 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         // after onUnbind() has already been called
     }
 
+    /*
+     *
+     *
+     */
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
@@ -278,10 +312,15 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         Log.d(TAG, "onHandleIntent:" + intent);
     }
 
+    /*
+     *
+     *
+     */
+    @Override
     public void onSharedPreferenceChanged(SharedPreferences sPref, String key) {
 
         Log.d(TAG, "onSharedPreferenceChanged");
-        Log.d(TAG, "sPref:" + sPref);
+        //Log.d(TAG, "sPref:" + sPref);
         Log.d(TAG, "key:" + key);
 
         if (key == null) {
@@ -294,10 +333,10 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
 
             String pi = sPref.getString(Constants.PREF_KEY_POLLING_INTERVAL, Constants.DEFAULT_POLLING_DELAY_STRING);
 
-            pollingInterval = Integer.parseInt(pi);
+            setPollingInterval(Integer.parseInt(pi));
 
-            Log.d(TAG, "Updating polling interval to " + pollingInterval);
-            rr.setPollingDelay(pollingInterval);
+            Log.d(TAG, "Updating polling interval to " + getPollingInterval());
+            rr.setPollingDelay(getPollingInterval());
 
             return;
 
@@ -306,15 +345,36 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         if (key.compareToIgnoreCase(Constants.PREF_KEY_ENABLE_POLLING) == 0) {
 
             Log.d(TAG, "Updating polling status");
-            boolean pauseStatus = sPref.getBoolean(Constants.PREF_KEY_ENABLE_POLLING, false);
+            boolean pollStatus = sPref.getBoolean(Constants.PREF_KEY_ENABLE_POLLING, true);
 
-            Log.d(TAG, "Updating polling status to " + pauseStatus);
-            rr.pausePoll(pauseStatus);
+            Log.d(TAG, "Updating polling status to " + pollStatus);
+            //rr.setPausePoll(pauseStatus);
+            if (pollStatus == true) {
+                rr.setPollStatus(ReadingReceiver.PollStatus.Run);
+            } else {
+                rr.setPollStatus(ReadingReceiver.PollStatus.Paused);
+            }
 
             return;
         }
 
+        Log.e(TAG, "Didn't handle key:" + key);
 
+    }
+
+    /**
+     * @return the pollingInterval
+     */
+    public int getPollingInterval() {
+        return pollingInterval;
+    }
+
+    /**
+     * @param pollingInterval the pollingInterval to set
+     */
+    public void setPollingInterval(int pollingInterval) {
+        Log.d(TAG, "setPollingInterval:" + pollingInterval);
+        this.pollingInterval = pollingInterval;
     }
 
     /**
