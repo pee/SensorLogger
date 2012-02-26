@@ -17,11 +17,11 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
+import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
-import android.widget.*;
+import android.widget.SimpleCursorAdapter;
 import net.sig13.sensorlogger.cp.PressureDataTable;
 import net.sig13.sensorlogger.cp.SensorContentProvider;
 
@@ -54,10 +54,15 @@ public class SensorDataListFragment extends ListFragment implements OnQueryTextL
         setHasOptionsMenu(true);
 
         // Create an empty adapter we will use to display the loaded data.
+//        mAdapter = new SimpleCursorAdapter(getActivity(),
+//                android.R.layout.simple_list_item_2, null,
+//                new String[]{PressureDataTable.COLUMN_TIME, PressureDataTable.COLUMN_VALUE},
+//                new int[]{android.R.id.text1, android.R.id.text2}, 0);
+
         mAdapter = new SimpleCursorAdapter(getActivity(),
-                android.R.layout.simple_list_item_2, null,
+                R.layout.reading_row, null,
                 new String[]{PressureDataTable.COLUMN_TIME, PressureDataTable.COLUMN_VALUE},
-                new int[]{android.R.id.text1, android.R.id.text2}, 0);
+                new int[]{R.id.rr_text1, R.id.rr_text2}, 0);
 
         setListAdapter(mAdapter);
 

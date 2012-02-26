@@ -1,21 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="appPackage">net.sig13.sensorlogger</string>
-
     <string name="appName">SLogger</string>
 
-    <string name="ticker">Hi, I\'m the ticker text!</string>
+    <string name="notification_title">Sensor Logger</string>
 
-    <string name="notification_title">Notification title</string>
-
-    <string name="notification_message">Notification Messages rock</string>
-
-    <string name="settings">settings</string>
-
-    <!-- these don't do jack yet -->
-    <string name="sharedPrefsFile">user_preferences</string>
-
-    <string name="sharedPrefsBackupKey">prefs</string>
+    <string name="notification_message">_put current status here_</string>
 
 </resources>
