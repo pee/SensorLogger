@@ -72,23 +72,6 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
 
     }
 
-//    @Override
-//    public void onCreate() {
-//        super.onCreate();
-//
-//        Log.d(TAG, "onCreate");
-//
-//        //cr = getContentResolver();
-//
-//
-//    }
-//
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//
-//        Log.d(TAG, "onDestroy");
-//    }
     /**
      *
      * @param pollingDelay
@@ -130,20 +113,6 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
         }
     }
 
-//    /*
-//     *
-//     *
-//     */
-//    public void setPausePoll(boolean status) {
-//
-//        Log.d(TAG, "pausePoll:" + pausePoll + ":" + status);
-//
-//
-//        handler.removeCallbacks(this);
-//
-//        pausePoll = status;
-//
-//    }
     /**
      *
      * @param pollStatus
@@ -175,9 +144,6 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
 
     }
 
-//    public boolean isPaused() {
-//        return pausePoll;
-//    }
     /**
      *
      * @param event
