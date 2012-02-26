@@ -58,11 +58,15 @@ public class SensorContentProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
-        Log.d(TAG, "query");
-        Log.d(TAG, "projection:" + projection);
-        Log.d(TAG, "selection:" + selection);
-        Log.d(TAG, "selectionArgs:" + selectionArgs);
-        Log.d(TAG, "sortOrder:" + sortOrder);
+        StringBuilder log = new StringBuilder();
+
+        log.append("query:");
+        log.append("projection:").append(projection);
+        log.append(",selection:").append(selection);
+        log.append(",selectionArgs:").append(selectionArgs);
+        log.append(",sortOrder:").append(sortOrder);
+
+        Log.d(TAG, log.toString());
 
         // Using SQLiteQueryBuilder instead of query() method
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
