@@ -23,6 +23,8 @@ public class SensorLogger extends Activity {
     //
     public static final String PREFS_NAME = "SensorLoggerPrefs";
     //
+    private static final String SENSOR_DATA_LIST_FRAG_TAG = "sdlf";
+    //
     private SimpleCursorAdapter adapter;
     private LoaderManager lm;
     private FragmentManager fm;
@@ -47,8 +49,9 @@ public class SensorLogger extends Activity {
         FragmentTransaction ft = fm.beginTransaction();
 
         SensorDataListFragment sdlf = new SensorDataListFragment();
-        ft.add(android.R.id.content, sdlf, "sdlf");
+        ft.add(android.R.id.content, sdlf, SENSOR_DATA_LIST_FRAG_TAG);
         ft.commit();
+
 
     }
 

@@ -89,7 +89,7 @@ public class SensorContentProvider extends ContentProvider {
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
 
-        SQLiteDatabase db = database.getWritableDatabase();
+        SQLiteDatabase db = database.getReadableDatabase();
         Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
         // Make sure that potential listeners are getting notified
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
