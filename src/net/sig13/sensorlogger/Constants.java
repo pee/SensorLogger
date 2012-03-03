@@ -20,6 +20,7 @@ public class Constants {
     //public final static String POLLING_DELAY_PREFNAME = "pollingDelay";
     public final static String PREF_KEY_ENABLE_POLLING = "enable_polling";
     public final static String PREF_KEY_POLLING_INTERVAL = "polling_interval";
+    public final static String PREF_KEY_STORAGE_TIME = "storageTime";
 
     public final static int DB_VERSION = 1;
     public final static String DB_NAME = "readings";

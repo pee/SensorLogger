@@ -24,6 +24,18 @@
             android:numeric="integer"
             />
 
+        <ListPreference
+            android:key="storageTime"
+            android:title="Storage Time"
+            android:summary="length of time to store data (on phone)"
+            android:entries="@array/storageTime"
+            android:entryValues="@array/storageTimeValues"
+            android:defaultValue="60"
+            android:dialogTitle="Time to store data"
+            android:dependency="enable_polling"
+            android:numeric="integer"
+            />
+
 
 
     </PreferenceCategory>

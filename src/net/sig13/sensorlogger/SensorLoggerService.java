@@ -46,6 +46,7 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
     //
     private SharedPreferences prefs;
     private int pollingInterval;
+    private int storageTime;
     //
     private ContentResolver cr;
     //
@@ -55,6 +56,8 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
     private List<Sensor> humidity;
     //
     private Notification notification;
+    //
+    private AlarmManager mgr;
 
     /*
      *
@@ -114,7 +117,6 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         super.onCreate();
 
         Log.d(TAG, "getSharedPreferences");
-        //prefs = getSharedPreferences(Constants.SHARED_PREFS_FILE, MODE_PRIVATE);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         prefs.registerOnSharedPreferenceChangeListener(this);
@@ -124,24 +126,9 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         acquireSensors();
         dumpSensors();
 
-        cr = this.getContentResolver();
-        rr = new ReadingReceiver(sm, handler, cr);
-        String piString = prefs.getString(Constants.PREF_KEY_POLLING_INTERVAL, Constants.DEFAULT_POLLING_DELAY_STRING);
-        setPollingInterval(Integer.parseInt(piString));
-        rr.setPollingDelay(getPollingInterval());
+        cr = getContentResolver();
 
-        Context context = getBaseContext();
-        // The service is being created
-        AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent i = new Intent(context, OnAlarmReceiver.class);
-        PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
-        mgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 60000, 60000, pi);
-
-        // clear pending scheduled handle events for rr
-        handler.removeCallbacks(rr);
-
-        // schedule run of rr in POLLER_START_DELAY ms
-        handler.postDelayed(rr, POLLER_START_DELAY);
+        getReadingReceiver();
 
         Toast.makeText(this, "starting sensor logger service", Toast.LENGTH_SHORT).show();
 
@@ -149,7 +136,50 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
 
         startForeground(NOTIFICATION_ID, notification);
 
+        getAlarmManager();
+        scheduleAlarm();
 
+    }
+
+    /**
+     *
+     */
+    private void getReadingReceiver() {
+
+        assert (sm != null);
+        assert (handler != null);
+        assert (cr != null);
+
+        rr = new ReadingReceiver(sm, handler, cr);
+
+        String piString = prefs.getString(Constants.PREF_KEY_POLLING_INTERVAL, Constants.DEFAULT_POLLING_DELAY_STRING);
+        setPollingInterval(Integer.parseInt(piString));
+        rr.setPollingDelay(getPollingInterval());
+
+        // clear pending scheduled handle events for rr
+        handler.removeCallbacks(rr);
+
+        // schedule run of rr in POLLER_START_DELAY ms
+        handler.postDelayed(rr, POLLER_START_DELAY);
+    }
+
+    /**
+     *
+     */
+    private void getAlarmManager() {
+        Context context = getBaseContext();
+        mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+    }
+
+    /**
+     *
+     */
+    private void scheduleAlarm() {
+
+        Context context = getBaseContext();
+        Intent i = new Intent(context, OnAlarmReceiver.class);
+        PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
+        mgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 60000, 60000, pi);
     }
 
     // FIXME: do i need this anymore ? ;p
@@ -189,6 +219,8 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
      *
      */
     private synchronized void acquireSensors() {
+
+        assert (sm != null);
 
         ambientTemp = sm.getSensorList(Sensor.TYPE_AMBIENT_TEMPERATURE);
         light = sm.getSensorList(Sensor.TYPE_LIGHT);
@@ -305,9 +337,7 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sPref, String key) {
 
-        Log.d(TAG, "onSharedPreferenceChanged");
-        //Log.d(TAG, "sPref:" + sPref);
-        Log.d(TAG, "key:" + key);
+        Log.d(TAG, "onSharedPreferenceChanged:" + key + ":");
 
         if (key == null) {
             return;
@@ -334,7 +364,7 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
             boolean pollStatus = sPref.getBoolean(Constants.PREF_KEY_ENABLE_POLLING, true);
 
             Log.d(TAG, "Updating polling status to " + pollStatus);
-            //rr.setPausePoll(pauseStatus);
+
             if (pollStatus == true) {
                 rr.setPollStatus(ReadingReceiver.PollStatus.Run);
             } else {
@@ -344,7 +374,7 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
             return;
         }
 
-        Log.e(TAG, "Didn't handle key:" + key);
+        Log.e(TAG, "Didn't handle key:" + key + ":");
 
     }
 
@@ -359,8 +389,23 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
      * @param pollingInterval the pollingInterval to set
      */
     public void setPollingInterval(int pollingInterval) {
-        Log.d(TAG, "setPollingInterval:" + pollingInterval);
+        Log.d(TAG, "setPollingInterval:" + pollingInterval + ":");
         this.pollingInterval = pollingInterval;
+    }
+
+    /**
+     * @return the storageTime
+     */
+    public int getStorageTime() {
+        return storageTime;
+    }
+
+    /**
+     * @param storageTime the storageTime to set
+     */
+    public void setStorageTime(int storageTime) {
+        Log.d(TAG, "setStorageTime:" + storageTime + ":");
+        this.storageTime = storageTime;
     }
 
     /**

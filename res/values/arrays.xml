@@ -23,6 +23,26 @@
         <item name="3600000">3600000</item>
     </string-array>
 
+    <string-array name="storageTime">
+        <item name="7">1 week</item>
+        <item name="14">2 weeks</item>
+        <item name="31">1 month</item>
+        <item name="60">2 months</item>
+        <item name="90">3 months</item>
+        <item name="180">6 months</item>
+        <item name="365">1 Year</item>
+    </string-array>
+
+    <string-array name="storageTimeValues">
+        <item name="7">7</item>
+        <item name="14">14</item>
+        <item name="31">31</item>
+        <item name="60">60</item>
+        <item name="90">90</item>
+        <item name="180">180</item>
+        <item name="365">365</item>
+    </string-array>
+
 </resources>
 
 
