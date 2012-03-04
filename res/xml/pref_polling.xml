@@ -14,8 +14,8 @@
 
         <CheckBoxPreference
             android:key="lowBatteryStop"
-            android:title="Low Battery"
-            android:summary="Stop polling then the battery is low"
+            android:title="Low Battery Polling"
+            android:summary="Stop polling when battery is low"
             android:defaultValue="true"
             android:dependency="enable_polling"
             />
