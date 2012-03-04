@@ -6,6 +6,7 @@ package net.sig13.sensorlogger;
 import android.app.Service;
 import android.content.*;
 import android.hardware.*;
+import android.location.*;
 import android.net.Uri;
 import android.os.*;
 import android.util.Log;
@@ -16,7 +17,7 @@ import net.sig13.sensorlogger.cp.SensorContentProvider;
 //
 //
 //
-public class ReadingReceiver extends Service implements SensorEventListener, Runnable {
+public class ReadingReceiver extends Service implements SensorEventListener, LocationListener, Runnable {
 
     private final static String TAG = "SLoggerService:RR";
     //
@@ -34,6 +35,8 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
     private double average;
     private SensorManager sm;
     //
+    private LocationManager lm;
+    //
     private Handler handler;
     //
     //private volatile boolean pausePoll = false;
@@ -45,20 +48,29 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
     private boolean mBound;
     // polling delay in milliseconds
     private int pollingDelay = DEFAULT_POLLING_DELAY;
+    private boolean enableLocation = Constants.PREF_DEFAULT_ENABLE_LOCATION;
     //
     private ContentResolver cr;
     //
     private volatile PollStatus pollStatus = PollStatus.Run;
+    //
+    private double longitude = 0.0;
+    private double latitude = 0.0;
 
     /*
      *
      */
-    public ReadingReceiver(SensorManager sm, Handler handler, ContentResolver cr) {
+    public ReadingReceiver(SensorManager sm, LocationManager lm, Handler handler, ContentResolver cr) {
 
         if (sm == null) {
             throw new NullPointerException("SensorManager must not be null");
         }
         this.sm = sm;
+
+        if (lm == null) {
+            throw new NullPointerException("LocationManager must not be null");
+        }
+        this.lm = lm;
 
         if (handler == null) {
             throw new NullPointerException("Handler must not be null");
@@ -210,12 +222,73 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
         mNewValues.put(PressureDataTable.COLUMN_TIME, now);
         mNewValues.put(PressureDataTable.COLUMN_VALUE, newReading);
 
+        if (enableLocation == true) {
+            // use 0.0 for data
+            mNewValues.put(PressureDataTable.COLUMN_LONGITUDE, 0.0);
+            mNewValues.put(PressureDataTable.COLUMN_LATITUDE, 0.0);
+        } else {
+            mNewValues.put(PressureDataTable.COLUMN_LONGITUDE, longitude);
+            mNewValues.put(PressureDataTable.COLUMN_LATITUDE, latitude);
+        }
+
         Uri CONTENT_URI = Uri.parse("content://" + SensorContentProvider.AUTHORITY + "/readings");
 
         mNewUri = cr.insert(CONTENT_URI, mNewValues);
 
         Log.d(TAG, "mNewUri:" + mNewUri + ":" + now);
 
+    }
+
+    /**
+     * 
+     */
+    private void startLocationCollection() {
+
+        Log.d(TAG, "startingLocation");
+
+        // Register the listener with the Location Manager to receive location updates
+        try {
+
+            // According to the docs PASSIVE_PROVIDER will just use readings other
+            // apps have requested. We'll stick with that for now.
+            //
+            // other options are
+            // LocationManager.NETWORK_PROVIDER
+            // LocationManager.GPS_PROVIDER
+
+            lm.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage(), e);
+        }
+
+    }
+
+    private void stopLocationCollection() {
+        lm.removeUpdates(this);
+    }
+
+    public void onLocationChanged(Location location) {
+        Log.d(TAG, "onLocationChanged:" + location);
+
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
+
+        if (location.hasAltitude()) {
+            Log.d(TAG, "altitude:" + location.getAltitude());
+        }
+
+    }
+
+    public void onStatusChanged(String provider, int status, Bundle bundle) {
+        Log.d(TAG, "onStatusChanged:" + provider + ":status:" + status + ":bundle:" + bundle);
+    }
+
+    public void onProviderEnabled(String provider) {
+        Log.d(TAG, "onProviderEnabled:" + provider);
+    }
+
+    public void onProviderDisabled(String provider) {
+        Log.d(TAG, "onProviderDisabled:" + provider);
     }
 
     /**
@@ -291,6 +364,27 @@ public class ReadingReceiver extends Service implements SensorEventListener, Run
 
         return true;
 
+    }
+
+    /**
+     * @return the enableLocation
+     */
+    public boolean isEnableLocation() {
+        return enableLocation;
+    }
+
+    /**
+     * @param enableLocation the enableLocation to set
+     */
+    public void setEnableLocation(boolean enableLocation) {
+        Log.d(TAG, "setEnableLocation:" + enableLocation);
+        this.enableLocation = enableLocation;
+
+        if (enableLocation == true) {
+            startLocationCollection();
+        } else {
+            stopLocationCollection();
+        }
     }
 
     /*

@@ -23,7 +23,9 @@ public class Constants {
     public final static String PREF_KEY_LOW_BATTERY_SYNC_STOP = "lowBatterySyncStop";
     public final static String PREF_KEY_POLLING_INTERVAL = "polling_interval";
     public final static String PREF_KEY_STORAGE_TIME = "storageTime";
+
     public final static String PREF_KEY_ENABLE_LOCATION = "enableLocation";
+    public final static boolean PREF_DEFAULT_ENABLE_LOCATION = false;
 
     public final static int DB_VERSION = 1;
     public final static String DB_NAME = "readings";

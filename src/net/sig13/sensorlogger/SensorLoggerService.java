@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.location.LocationManager;
 import android.os.*;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -31,6 +32,7 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
     private static final int POLLER_START_DELAY = 5000; //  5 seconds
     //
     private SensorManager sm;
+    private LocationManager lm;
     //
     int mStartMode = START_STICKY;       // indicates how to behave if the service is killed
     //
@@ -47,6 +49,7 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
     private SharedPreferences prefs;
     private int pollingInterval;
     private int storageTime;
+    private boolean enableLocation;
     //
     private ContentResolver cr;
     //
@@ -126,6 +129,8 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         acquireSensors();
         dumpSensors();
 
+        lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
         cr = getContentResolver();
 
         getReadingReceiver();
@@ -150,11 +155,16 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         assert (handler != null);
         assert (cr != null);
 
-        rr = new ReadingReceiver(sm, handler, cr);
+        rr = new ReadingReceiver(sm, lm, handler, cr);
 
         String piString = prefs.getString(Constants.PREF_KEY_POLLING_INTERVAL, Constants.DEFAULT_POLLING_DELAY_STRING);
         setPollingInterval(Integer.parseInt(piString));
         rr.setPollingDelay(getPollingInterval());
+
+        boolean el = prefs.getBoolean(Constants.PREF_KEY_ENABLE_LOCATION, Constants.PREF_DEFAULT_ENABLE_LOCATION);
+        setEnableLocation(el);
+        rr.setEnableLocation(el);
+
 
         // clear pending scheduled handle events for rr
         handler.removeCallbacks(rr);
@@ -374,6 +384,18 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
             return;
         }
 
+        if (key.compareToIgnoreCase(Constants.PREF_KEY_ENABLE_LOCATION) == 0) {
+
+            Log.d(TAG, "Updating location polling status");
+            boolean el = sPref.getBoolean(Constants.PREF_KEY_ENABLE_LOCATION, Constants.PREF_DEFAULT_ENABLE_LOCATION);
+
+            Log.d(TAG, "Updating location polling to:" + el);
+
+            setEnableLocation(el);
+
+            return;
+        }
+
         Log.e(TAG, "Didn't handle key:" + key + ":");
 
     }
@@ -406,6 +428,21 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
     public void setStorageTime(int storageTime) {
         Log.d(TAG, "setStorageTime:" + storageTime + ":");
         this.storageTime = storageTime;
+    }
+
+    /**
+     * @return the enableLocation
+     */
+    public boolean isEnableLocation() {
+        return enableLocation;
+    }
+
+    /**
+     * @param enableLocation the enableLocation to set
+     */
+    public void setEnableLocation(boolean enableLocation) {
+        Log.d(TAG, "enableLocation:" + enableLocation + ":");
+        this.enableLocation = enableLocation;
     }
 
     /**

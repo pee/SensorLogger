@@ -28,8 +28,8 @@ public class PressureDataTable {
             + COLUMN_ID + " integer primary key autoincrement, "
             + COLUMN_TIME + " integer not null, "
             + COLUMN_VALUE + " real not null,"
-            + COLUMN_LATITUDE + " real, "
-            + COLUMN_LONGITUDE + " real"
+            + COLUMN_LATITUDE + " real not null, "
+            + COLUMN_LONGITUDE + " real not null"
             + ");";
 
     public static void onCreate(SQLiteDatabase database) {

@@ -197,7 +197,7 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
         Log.d(TAG, key + ":" + newValue);
 
         try {
-            int newValueAsInt = Integer.parseInt(newValue.toString());
+            Integer.parseInt(newValue.toString());
         } catch (Exception e) {
             Log.e(TAG, key + " couldn't parse integer from :" + newValue.getClass() + ":");
             return false;
