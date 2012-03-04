@@ -13,10 +13,19 @@
     <!--
     // Permissions we are going to request
     -->
+    <!-- used for syncing to the network -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- required to get location information if it is enabled -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- i forgot why i needed this :), FIXME! -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- required to start the service on boot -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- END PERMS -->
 
     <application android:label="@string/appName"
                  android:icon="@drawable/ic_launcher"

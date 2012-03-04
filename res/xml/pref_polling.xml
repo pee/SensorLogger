@@ -40,7 +40,7 @@
             android:key="enableLocation"
             android:title="Location information"
             android:summary="Allow the application to collection location information"
-            android:defaultValue="true"
+            android:defaultValue="false"
             />
 
         <ListPreference
