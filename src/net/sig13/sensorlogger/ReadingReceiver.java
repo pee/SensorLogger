@@ -140,12 +140,17 @@ public class ReadingReceiver extends Service implements SensorEventListener, Loc
         this.pollStatus = pollStatus;
 
         switch (pollStatus) {
+
             case Run:
                 newDelay = pollingDelay;
+                startLocationCollection();
                 break;
+
             case Paused:
                 newDelay = Constants.PAUSE_POLLING_DELAY;
+                stopLocationCollection();
                 break;
+
             default:
                 Log.d(TAG, "***Unhandled enum status***");
                 newDelay = Constants.PAUSE_POLLING_DELAY;
@@ -165,10 +170,12 @@ public class ReadingReceiver extends Service implements SensorEventListener, Loc
 
         //Log.d(TAG, "onSensorChanged:");
         switch (event.sensor.getType()) {
+
             case Sensor.TYPE_PRESSURE:
                 lastReading = event.values[0];
                 addReading(lastReading);
                 break;
+
         }
     }
 
@@ -210,6 +217,10 @@ public class ReadingReceiver extends Service implements SensorEventListener, Loc
 
     }
 
+    /**
+     *
+     * @param newReading
+     */
     private void updateRecord(double newReading) {
 
         Uri mNewUri;
@@ -240,7 +251,7 @@ public class ReadingReceiver extends Service implements SensorEventListener, Loc
     }
 
     /**
-     * 
+     *
      */
     private void startLocationCollection() {
 
@@ -256,7 +267,8 @@ public class ReadingReceiver extends Service implements SensorEventListener, Loc
             // LocationManager.NETWORK_PROVIDER
             // LocationManager.GPS_PROVIDER
 
-            lm.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
+            lm.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, Constants.DEFAULT_LOCATION_DELAY, 0, this);
+
         } catch (Exception e) {
             Log.e(TAG, e.getMessage(), e);
         }
@@ -267,6 +279,10 @@ public class ReadingReceiver extends Service implements SensorEventListener, Loc
         lm.removeUpdates(this);
     }
 
+    /**
+     *
+     * @param location
+     */
     public void onLocationChanged(Location location) {
         Log.d(TAG, "onLocationChanged:" + location);
 
@@ -279,14 +295,28 @@ public class ReadingReceiver extends Service implements SensorEventListener, Loc
 
     }
 
+    /**
+     *
+     * @param provider
+     * @param status
+     * @param bundle
+     */
     public void onStatusChanged(String provider, int status, Bundle bundle) {
         Log.d(TAG, "onStatusChanged:" + provider + ":status:" + status + ":bundle:" + bundle);
     }
 
+    /**
+     *
+     * @param provider
+     */
     public void onProviderEnabled(String provider) {
         Log.d(TAG, "onProviderEnabled:" + provider);
     }
 
+    /**
+     *
+     * @param provider
+     */
     public void onProviderDisabled(String provider) {
         Log.d(TAG, "onProviderDisabled:" + provider);
     }
@@ -332,9 +362,9 @@ public class ReadingReceiver extends Service implements SensorEventListener, Loc
 
     }
 
-    /*
+    /**
      *
-     *
+     * @return
      */
     private boolean setupBarometer() {
 
@@ -346,7 +376,6 @@ public class ReadingReceiver extends Service implements SensorEventListener, Loc
             if (barometer != null) {
 
                 boolean running = sm.registerListener(this, barometer, SensorManager.SENSOR_DELAY_NORMAL);
-
                 if (running == false) {
                     Log.e(TAG, "failed to register listener with sensor manager");
                     return false;
@@ -400,8 +429,7 @@ public class ReadingReceiver extends Service implements SensorEventListener, Loc
      */
     private ServiceConnection mConnection = new ServiceConnection() {
 
-        /*
-         *
+        /**
          *
          */
         @Override
@@ -412,8 +440,7 @@ public class ReadingReceiver extends Service implements SensorEventListener, Loc
             mBound = true;
         }
 
-        /*
-         *
+        /**
          *
          */
         @Override
