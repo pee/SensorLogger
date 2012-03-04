@@ -144,7 +144,10 @@ public class SensorContentProvider extends ContentProvider {
         String[] available = {
             PressureDataTable.COLUMN_TIME,
             PressureDataTable.COLUMN_VALUE,
-            PressureDataTable.COLUMN_ID};
+            PressureDataTable.COLUMN_ID,
+            PressureDataTable.COLUMN_LONGITUDE,
+            PressureDataTable.COLUMN_LATITUDE
+        };
 
         if (projection != null) {
 

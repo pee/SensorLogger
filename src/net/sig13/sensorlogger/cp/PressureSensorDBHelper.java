@@ -13,7 +13,7 @@ public class PressureSensorDBHelper extends SQLiteOpenHelper {
     private static final String TAG = "SLogger:SQLiteOpenHelper";
     //
     private static final String DATABASE_NAME = "pressuredata.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public PressureSensorDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

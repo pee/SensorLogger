@@ -18,14 +18,22 @@ import net.sig13.sensorlogger.R;
 
 //
 //
+//  TODO: There are only 2 kinds of changed prefs here int/boolean right now we can combine the logic in he
+//  changed prefs calls and and an argument for the name
+//
 //
 public class PollingFragment extends PreferenceFragment implements OnPreferenceChangeListener, OnPreferenceClickListener {
 
     private static final String TAG = "SLogger:PollingFragment";
     //
     private CheckBoxPreference enablePolling;
+    private CheckBoxPreference lowBatteryStop;
+    private CheckBoxPreference enableSync;
+    private CheckBoxPreference lowBatterySyncStop;
+    private CheckBoxPreference enableLocation;
     private ListPreference pollingInterval;
     private ListPreference storageTime;
+    //
     private PreferenceManager pm;
     private SharedPreferences prefs;
     private BackupManager bm;
@@ -65,12 +73,23 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
         enablePolling = (CheckBoxPreference) findPreference(Constants.PREF_KEY_ENABLE_POLLING);
         enablePolling.setOnPreferenceChangeListener(this);
 
+        lowBatteryStop = (CheckBoxPreference) findPreference(Constants.PREF_KEY_LOW_BATTERY_STOP);
+        lowBatteryStop.setOnPreferenceChangeListener(this);
+
+        enableSync = (CheckBoxPreference) findPreference(Constants.PREF_KEY_ENABLE_SYNC);
+        enableSync.setOnPreferenceChangeListener(this);
+
+        lowBatterySyncStop = (CheckBoxPreference) findPreference(Constants.PREF_KEY_LOW_BATTERY_SYNC_STOP);
+        lowBatterySyncStop.setOnPreferenceChangeListener(this);
+
+        enableLocation = (CheckBoxPreference) findPreference(Constants.PREF_KEY_ENABLE_LOCATION);
+        enableLocation.setOnPreferenceChangeListener(this);
+
         pollingInterval = (ListPreference) findPreference(Constants.PREF_KEY_POLLING_INTERVAL);
         pollingInterval.setOnPreferenceChangeListener(this);
 
         storageTime = (ListPreference) findPreference(Constants.PREF_KEY_STORAGE_TIME);
         storageTime.setOnPreferenceChangeListener(this);
-
 
     }
 
@@ -100,15 +119,31 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
 
         if (key.equalsIgnoreCase(Constants.PREF_KEY_ENABLE_POLLING)) {
 
-            worked = prefChangedEnablePolling(pref, newValue);
+            worked = prefChangedBoolean(pref, newValue, Constants.PREF_KEY_ENABLE_POLLING);
+
+        } else if (key.equalsIgnoreCase(Constants.PREF_KEY_ENABLE_SYNC)) {
+
+            worked = prefChangedBoolean(pref, newValue, Constants.PREF_KEY_ENABLE_SYNC);
+
+        } else if (key.equalsIgnoreCase(Constants.PREF_KEY_LOW_BATTERY_STOP)) {
+
+            worked = prefChangedBoolean(pref, newValue, Constants.PREF_KEY_LOW_BATTERY_STOP);
+
+        } else if (key.equalsIgnoreCase(Constants.PREF_KEY_LOW_BATTERY_SYNC_STOP)) {
+
+            worked = prefChangedBoolean(pref, newValue, Constants.PREF_KEY_LOW_BATTERY_SYNC_STOP);
+
+        } else if (key.equalsIgnoreCase(Constants.PREF_KEY_ENABLE_LOCATION)) {
+
+            worked = prefChangedBoolean(pref, newValue, Constants.PREF_KEY_ENABLE_LOCATION);
 
         } else if (key.equalsIgnoreCase(Constants.PREF_KEY_POLLING_INTERVAL)) {
 
-            worked = prefChangedPollingInterval(pref, newValue);
+            worked = prefChangedInt(pref, newValue, Constants.PREF_KEY_POLLING_INTERVAL);
 
         } else if (key.equalsIgnoreCase(Constants.PREF_KEY_STORAGE_TIME)) {
 
-            worked = prefChangedStorageTime(pref, newValue);
+            worked = prefChangedInt(pref, newValue, Constants.PREF_KEY_STORAGE_TIME);
 
         } else {
             Log.w(TAG, "Unknown onPreferenceKeyChange:" + key + ":" + newValue + ":");
@@ -119,6 +154,126 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
         }
 
         return true;
+    }
+
+    /**
+     *
+     * @param pref
+     * @param newValue
+     * @return
+     */
+    private boolean prefChangedBoolean(Preference pref, Object newValue, String updateKey) {
+
+        String prefName = pref.getKey();
+        Log.d(TAG, prefName + ":" + newValue);
+
+        if (!(newValue instanceof Boolean)) {
+            Log.e(TAG, prefName + " wanted a boolean preference got:" + newValue.getClass());
+            return false;
+        }
+
+        Editor editor = pref.getEditor();
+
+        Log.d(TAG, "updating " + prefName + " preference");
+        editor.putBoolean(updateKey, Boolean.getBoolean(newValue.toString()));
+
+        boolean commit = editor.commit();
+
+        Log.d(TAG, "calling dataChanged() for " + prefName);
+        bm.dataChanged();
+
+        return commit;
+
+    }
+
+    /**
+     *
+     * @param pref
+     * @param newValue
+     * @return
+     */
+    private boolean prefChangedLowBatterySyncStop(Preference pref, Object newValue) {
+
+        String prefName = pref.getKey();
+        Log.d(TAG, prefName + ":" + newValue);
+
+        if (!(newValue instanceof Boolean)) {
+            Log.e(TAG, prefName + " wanted a boolean preference got:" + newValue.getClass());
+            return false;
+        }
+
+        Editor editor = pref.getEditor();
+
+        Log.d(TAG, "updating " + prefName + " preference");
+        editor.putBoolean(Constants.PREF_KEY_LOW_BATTERY_SYNC_STOP, Boolean.getBoolean(newValue.toString()));
+
+        boolean commit = editor.commit();
+
+        Log.d(TAG, "calling dataChanged() for " + prefName);
+        bm.dataChanged();
+
+        return commit;
+
+    }
+
+    /**
+     *
+     * @param pref
+     * @param newValue
+     * @return
+     */
+    private boolean prefChangedEnableSync(Preference pref, Object newValue) {
+
+        String prefName = pref.getKey();
+        Log.d(TAG, prefName + ":" + newValue);
+
+        if (!(newValue instanceof Boolean)) {
+            Log.e(TAG, prefName + " wanted a boolean preference got:" + newValue.getClass());
+            return false;
+        }
+
+        Editor editor = pref.getEditor();
+
+        Log.d(TAG, "updating " + prefName + " preference");
+        editor.putBoolean(Constants.PREF_KEY_ENABLE_SYNC, Boolean.getBoolean(newValue.toString()));
+
+        boolean commit = editor.commit();
+
+        Log.d(TAG, "calling dataChanged() for " + prefName);
+        bm.dataChanged();
+
+        return commit;
+
+    }
+
+    /**
+     *
+     * @param pref
+     * @param newValue
+     * @return
+     */
+    private boolean prefChangedLowBatteryStop(Preference pref, Object newValue) {
+
+        String prefName = pref.getKey();
+        Log.d(TAG, prefName + ":" + newValue);
+
+        if (!(newValue instanceof Boolean)) {
+            Log.e(TAG, prefName + " wanted a boolean preference got:" + newValue.getClass());
+            return false;
+        }
+
+        Editor editor = pref.getEditor();
+
+        Log.d(TAG, "updating " + prefName + " preference");
+        editor.putBoolean(Constants.PREF_KEY_LOW_BATTERY_STOP, Boolean.getBoolean(newValue.toString()));
+
+        boolean commit = editor.commit();
+
+        Log.d(TAG, "calling dataChanged() for " + prefName);
+        bm.dataChanged();
+
+        return commit;
+
     }
 
     /**

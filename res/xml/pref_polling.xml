@@ -12,6 +12,37 @@
             android:defaultValue="true"
             />
 
+        <CheckBoxPreference
+            android:key="lowBatteryStop"
+            android:title="Low Battery"
+            android:summary="Stop polling then the battery is low"
+            android:defaultValue="true"
+            android:dependency="enable_polling"
+            />
+            
+        <CheckBoxPreference
+            android:key="enableSync"
+            android:title="Sync to service"
+            android:summary="Sync the data to online service"
+            android:defaultValue="false"
+            android:dependency="enable_polling"
+            />
+            
+        <CheckBoxPreference
+            android:key="lowBatterySyncStop"
+            android:title="Low Battery Sync Stop "
+            android:summary="Stop syncing then the battery is low"
+            android:defaultValue="true"
+            android:dependency="enableSync"
+            />
+
+        <CheckBoxPreference
+            android:key="enableLocation"
+            android:title="Location information"
+            android:summary="Allow the application to collection location information"
+            android:defaultValue="true"
+            />
+
         <ListPreference
             android:key="polling_interval"
             android:title="Polling Interval"
@@ -36,9 +67,6 @@
             android:numeric="integer"
             />
 
-
-
     </PreferenceCategory>
 
 </PreferenceScreen>
-
