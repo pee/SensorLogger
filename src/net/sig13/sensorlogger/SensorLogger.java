@@ -4,20 +4,23 @@
 package net.sig13.sensorlogger;
 
 import android.app.*;
+import android.app.ActionBar.Tab;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TabHost;
 import net.sig13.sensorlogger.prefs.MainPrefsActivity;
 
 //
 //
 //
-public class SensorLogger extends Activity {
+public class SensorLogger extends Activity implements ActionBar.TabListener {
 
     private final static String TAG = "SLogger";
     //
@@ -29,12 +32,20 @@ public class SensorLogger extends Activity {
     private LoaderManager lm;
     private FragmentManager fm;
     private ComponentName cName;
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
+        setContentView(R.layout.main);
 
         Log.d(TAG, "onCreate");
+
+        actionBar = getActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.setDisplayShowTitleEnabled(false);
+
+        fm = getFragmentManager();
 
         // last argument == false == don't replace known prefs
         PreferenceManager.setDefaultValues(this, R.xml.pref_polling, true);
@@ -44,13 +55,16 @@ public class SensorLogger extends Activity {
         cName = startService(intent);
         Log.d(TAG, "cName:" + cName);
 
-        fm = getFragmentManager();
+//        FragmentTransaction ft = fm.beginTransaction();
+//
+//        SensorDataListFragment sdlf = new SensorDataListFragment();
+//        ft.add(android.R.id.content, sdlf, SENSOR_DATA_LIST_FRAG_TAG);
+//        ft.commit();
 
-        FragmentTransaction ft = fm.beginTransaction();
-
-        SensorDataListFragment sdlf = new SensorDataListFragment();
-        ft.add(android.R.id.content, sdlf, SENSOR_DATA_LIST_FRAG_TAG);
-        ft.commit();
+        Tab tab = actionBar.newTab();
+        tab.setText("readings");
+        tab.setTabListener(new TabListener<SensorDataListFragment>(this, "readings", SensorDataListFragment.class));
+        actionBar.addTab(tab);
 
 
     }
@@ -89,5 +103,17 @@ public class SensorLogger extends Activity {
     private void showOptions() {
         Intent intent = new Intent(this, MainPrefsActivity.class);
         this.startActivity(intent);
+    }
+
+    public void onTabSelected(Tab tab, FragmentTransaction ft) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void onTabReselected(Tab tab, FragmentTransaction ft) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

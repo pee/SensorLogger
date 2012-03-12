@@ -30,12 +30,13 @@
     <application android:label="@string/appName"
                  android:icon="@drawable/ic_launcher"
                  android:backupAgent="net.sig13.sensorlogger.PrefsBackupAgent"
+                 uiOptions="splitActionBarWhenNarrow"
     >
 
         <activity
             android:name="net.sig13.sensorlogger.SensorLogger"
             android:label="@string/appName"
-            android:theme="@style/CustomTheme"
+            android:theme="@android:style/Theme.Holo"
         >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
