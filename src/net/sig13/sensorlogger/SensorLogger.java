@@ -3,18 +3,16 @@
 //
 package net.sig13.sensorlogger;
 
-import android.app.*;
 import android.app.ActionBar.Tab;
+import android.app.*;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TabHost;
 import net.sig13.sensorlogger.prefs.MainPrefsActivity;
 
 //
@@ -28,9 +26,9 @@ public class SensorLogger extends Activity implements ActionBar.TabListener {
     //
     private static final String SENSOR_DATA_LIST_FRAG_TAG = "sdlf";
     //
-    private SimpleCursorAdapter adapter;
-    private LoaderManager lm;
-    private FragmentManager fm;
+//    private SimpleCursorAdapter adapter;
+//    private LoaderManager lm;
+//    private FragmentManager fm;
     private ComponentName cName;
     private ActionBar actionBar;
 
@@ -45,7 +43,7 @@ public class SensorLogger extends Activity implements ActionBar.TabListener {
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.setDisplayShowTitleEnabled(false);
 
-        fm = getFragmentManager();
+//        fm = getFragmentManager();
 
         // last argument == false == don't replace known prefs
         PreferenceManager.setDefaultValues(this, R.xml.pref_polling, true);
@@ -65,6 +63,7 @@ public class SensorLogger extends Activity implements ActionBar.TabListener {
         tab.setText("readings");
         tab.setTabListener(new TabListener<SensorDataListFragment>(this, "readings", SensorDataListFragment.class));
         actionBar.addTab(tab);
+
 
 
     }
@@ -115,5 +114,23 @@ public class SensorLogger extends Activity implements ActionBar.TabListener {
 
     public void onTabReselected(Tab tab, FragmentTransaction ft) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause()");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume()");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy()");
     }
 }

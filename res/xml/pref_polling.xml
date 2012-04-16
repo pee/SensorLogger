@@ -67,6 +67,17 @@
             android:numeric="integer"
             />
 
+        <ListPreference
+            android:key="syncTo"
+            android:title="Sync To"
+            android:summary="service to sync to"
+            android:entries="@array/syncTo"
+            android:entryValues="@array/syncToValues"
+            android:defaultValue="sig13.net"
+            android:dialogTitle="Sync to service"
+            android:dependency="enableSync"
+            />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

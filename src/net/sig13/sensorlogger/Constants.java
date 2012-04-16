@@ -25,6 +25,7 @@ public class Constants {
     //
     public final static String PREF_KEY_ENABLE_LOCATION = "enableLocation";
     public final static boolean PREF_DEFAULT_ENABLE_LOCATION = false;
+    public final static boolean PREF_DEFAULT_ENABLE_SYNC = false;
     public final static int DEFAULT_LOCATION_DELAY = 60 * 5 * 1000; // 5 minutes
     //
     //

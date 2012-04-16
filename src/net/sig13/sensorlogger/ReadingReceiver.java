@@ -185,7 +185,7 @@ public class ReadingReceiver extends Service implements SensorEventListener, Loc
      */
     private synchronized void addReading(double reading) {
 
-        Log.d(TAG, "new value:" + reading);
+        //Log.d(TAG, "new value:" + reading);
 
         if (readCount >= READINGS_SIZE) {
             Log.e(TAG, "Tried to add too many readings:" + readCount + ":" + reading);
@@ -284,14 +284,14 @@ public class ReadingReceiver extends Service implements SensorEventListener, Loc
      * @param location
      */
     public void onLocationChanged(Location location) {
-        Log.d(TAG, "onLocationChanged:" + location);
+        //Log.d(TAG, "onLocationChanged:" + location);
 
         latitude = location.getLatitude();
         longitude = location.getLongitude();
 
-        if (location.hasAltitude()) {
-            Log.d(TAG, "altitude:" + location.getAltitude());
-        }
+//        if (location.hasAltitude()) {
+//            Log.d(TAG, "altitude:" + location.getAltitude());
+//        }
 
     }
 

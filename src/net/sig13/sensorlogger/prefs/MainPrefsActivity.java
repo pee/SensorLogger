@@ -68,4 +68,6 @@ public class MainPrefsActivity extends PreferenceActivity implements OnPreferenc
         Log.d(LOG_NAME, "onPreferenceClic");
         return true;
     }
+
+
 }

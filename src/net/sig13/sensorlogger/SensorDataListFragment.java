@@ -29,14 +29,13 @@ public class SensorDataListFragment extends ListFragment
         OnQueryTextListener,
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private final static String TAG = "SLogger:SensorDataListFrag";
+    private final static String TAG = "SLogger:SDataListFrag";
     // This is the Adapter being used to display the list's data.
     private SimpleCursorAdapter mAdapter;
     //
     private LoaderManager lm;
     //
     //
-    // These are the Contacts rows that we will retrieve.
     static final String[] SENSORDATA_SUMMARY_PROJECTION = new String[]{
         PressureDataTable.COLUMN_ID,
         PressureDataTable.COLUMN_TIME,
@@ -68,6 +67,7 @@ public class SensorDataListFragment extends ListFragment
         // or start a new one.
         lm = getLoaderManager();
         lm.initLoader(0, null, this);
+
 
     }
 
@@ -200,5 +200,30 @@ public class SensorDataListFragment extends ListFragment
 
     }
 
- 
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause()");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "OnResume()");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy()");
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d(TAG, "OnDestroyView()");
+        
+        lm.destroyLoader(0);
+
+    }
 }

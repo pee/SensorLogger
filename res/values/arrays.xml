@@ -43,6 +43,16 @@
         <item name="365">365</item>
     </string-array>
 
+    <string-array name="syncTo">
+        <item name="sig13.net">sig13.net</item>
+        <item name="open.sen.se">open.sen.se</item>
+    </string-array>
+
+    <string-array name="syncToValues">
+        <item name="sig13.net">SIG13</item>
+        <item name="open.sen.se">OPENSENSE</item>
+    </string-array>
+
 </resources>
 
 

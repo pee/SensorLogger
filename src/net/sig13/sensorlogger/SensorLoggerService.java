@@ -396,6 +396,19 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
             return;
         }
 
+        if ( key.compareToIgnoreCase(Constants.PREF_KEY_ENABLE_SYNC) == 0 ) {
+
+            Log.d(TAG, "Updating synchronization to online service");
+            boolean es = sPref.getBoolean(Constants.PREF_KEY_ENABLE_SYNC, Constants.PREF_DEFAULT_ENABLE_SYNC);
+
+            Log.d(TAG, "Setting sync to network to:" + es);
+
+            Log.w(TAG, "#######################################");
+            Log.w(TAG, "ENABLE CODE TO TURN SYNC ON/OFF DUMBASS");
+
+            return;
+        }
+
         Log.e(TAG, "Didn't handle key:" + key + ":");
 
     }
