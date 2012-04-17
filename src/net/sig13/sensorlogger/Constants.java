@@ -16,12 +16,21 @@ public class Constants {
     public final static int PAUSE_POLLING_DELAY = 300000;  // 5 minutes
     //
     //
-    public final static String PREF_KEY_ENABLE_POLLING = "enable_polling";
+    public final static String PREF_KEY_ENABLE_POLLING = "enablePolling";
     public final static String PREF_KEY_LOW_BATTERY_STOP = "lowBatteryStop";
     public final static String PREF_KEY_ENABLE_SYNC = "enableSync";
     public final static String PREF_KEY_LOW_BATTERY_SYNC_STOP = "lowBatterySyncStop";
-    public final static String PREF_KEY_POLLING_INTERVAL = "polling_interval";
+    public final static String PREF_KEY_POLLING_INTERVAL = "pollingInterval";
     public final static String PREF_KEY_STORAGE_TIME = "storageTime";
+    //
+    public final static String PREF_KEY_OPENSENSE_ENABLE = "enableOpenSenSe";
+    public final static String PREF_KEY_OPENSENSE_API_KEY = "openSenSeAPIKey";
+    public final static String PREF_KEY_OPENSENSE_FEED_ID = "openSenSeFeedID";
+    public final static String PREF_KEY_OPENSENSE_API_URI = "openSenSeAPIUri";
+    public final static String PREF_DEFAULT_OPENSENSE_API_URI = "http://api.sen.se/events/";
+    public final static String PREF_DEFAULT_OPENSENSE_FEED_ID = "00000";
+    public final static String PREF_DEFAULT_OPENSENSE_API_KEY = "XXXXXXXXXXXXXXXXX";
+    public final static boolean PREF_DEFAULT_OPENSENSE_ENABLE = false;
     //
     public final static String PREF_KEY_ENABLE_LOCATION = "enableLocation";
     public final static boolean PREF_DEFAULT_ENABLE_LOCATION = false;

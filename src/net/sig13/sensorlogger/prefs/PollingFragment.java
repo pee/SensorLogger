@@ -31,6 +31,10 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
     private CheckBoxPreference enableLocation;
     private ListPreference pollingInterval;
     private ListPreference storageTime;
+    private CheckBoxPreference enableOpenSenSe;
+    private EditTextPreference openSenSeAPIKey;
+    private EditTextPreference openSenSeFeedID;
+    private EditTextPreference openSenSeAPIUri;
     //
     private PreferenceManager pm;
     private SharedPreferences prefs;
@@ -89,6 +93,29 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
         storageTime = (ListPreference) findPreference(Constants.PREF_KEY_STORAGE_TIME);
         storageTime.setOnPreferenceChangeListener(this);
 
+        enableOpenSenSe = (CheckBoxPreference) findPreference(Constants.PREF_KEY_OPENSENSE_ENABLE);
+        enableOpenSenSe.setOnPreferenceChangeListener(this);
+        boolean enableOSE = prefs.getBoolean(Constants.PREF_KEY_OPENSENSE_ENABLE, Constants.PREF_DEFAULT_OPENSENSE_ENABLE);
+        enableOpenSenSe.setChecked(enableOSE);
+
+        openSenSeAPIKey = (EditTextPreference) findPreference(Constants.PREF_KEY_OPENSENSE_API_KEY);
+        openSenSeAPIKey.setOnPreferenceChangeListener(this);
+        String apiKey = prefs.getString(Constants.PREF_KEY_OPENSENSE_API_KEY, Constants.PREF_DEFAULT_OPENSENSE_API_KEY);
+        openSenSeAPIKey.setText(apiKey);
+        openSenSeAPIKey.setSummary(apiKey);
+
+        openSenSeFeedID = (EditTextPreference) findPreference(Constants.PREF_KEY_OPENSENSE_FEED_ID);
+        openSenSeFeedID.setOnPreferenceChangeListener(this);
+        String feedID = prefs.getString(Constants.PREF_KEY_OPENSENSE_FEED_ID, Constants.PREF_DEFAULT_OPENSENSE_FEED_ID);
+        openSenSeFeedID.setText(feedID);
+        openSenSeFeedID.setSummary(feedID);
+
+        openSenSeAPIUri = (EditTextPreference) findPreference(Constants.PREF_KEY_OPENSENSE_API_URI);
+        openSenSeAPIUri.setOnPreferenceChangeListener(this);
+        String apiUri = prefs.getString(Constants.PREF_KEY_OPENSENSE_API_URI, Constants.PREF_DEFAULT_OPENSENSE_API_URI);
+        openSenSeAPIUri.setText(apiUri);
+        openSenSeAPIUri.setSummary(apiUri);
+
     }
 
     /**
@@ -143,6 +170,35 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
 
             worked = prefChangedInt(pref, newValue, Constants.PREF_KEY_STORAGE_TIME);
 
+        } else if (key.equalsIgnoreCase(Constants.PREF_KEY_OPENSENSE_ENABLE)) {
+
+            worked = prefChangedBoolean(pref, newValue, Constants.PREF_KEY_OPENSENSE_ENABLE);
+
+        } else if (key.equalsIgnoreCase(Constants.PREF_KEY_OPENSENSE_API_KEY)) {
+
+            worked = prefChangedString(pref, newValue, Constants.PREF_KEY_OPENSENSE_API_KEY);
+            if (worked) {
+                openSenSeAPIKey.setText(newValue.toString());
+                openSenSeAPIKey.setSummary(newValue.toString());
+            }
+
+
+        } else if (key.equalsIgnoreCase(Constants.PREF_KEY_OPENSENSE_FEED_ID)) {
+
+            worked = prefChangedString(pref, newValue, Constants.PREF_KEY_OPENSENSE_FEED_ID);
+            if (worked) {
+                openSenSeFeedID.setText(newValue.toString());
+                openSenSeFeedID.setSummary(newValue.toString());
+            }
+
+        } else if (key.equalsIgnoreCase(Constants.PREF_KEY_OPENSENSE_API_URI)) {
+
+            worked = prefChangedString(pref, newValue, Constants.PREF_KEY_OPENSENSE_API_URI);
+            if (worked) {
+                openSenSeAPIUri.setText(newValue.toString());
+                openSenSeAPIUri.setSummary(newValue.toString());
+            }
+
         } else {
             Log.w(TAG, "Unknown onPreferenceKeyChange:" + key + ":" + newValue + ":");
         }
@@ -174,6 +230,36 @@ public class PollingFragment extends PreferenceFragment implements OnPreferenceC
 
         Log.d(TAG, "updating " + prefName + " preference");
         editor.putBoolean(updateKey, Boolean.getBoolean(newValue.toString()));
+
+        boolean commit = editor.commit();
+
+        Log.d(TAG, "calling dataChanged() for " + prefName);
+        bm.dataChanged();
+
+        return commit;
+
+    }
+
+    /**
+     *
+     * @param pref
+     * @param newValue
+     * @return
+     */
+    private boolean prefChangedString(Preference pref, Object newValue, String updateKey) {
+
+        String prefName = pref.getKey();
+        Log.d(TAG, prefName + ":" + newValue);
+
+        if (!(newValue instanceof String)) {
+            Log.e(TAG, prefName + " wanted a String preference got:" + newValue.getClass());
+            return false;
+        }
+
+        Editor editor = pref.getEditor();
+
+        Log.d(TAG, "updating " + prefName + " preference");
+        editor.putString(updateKey, newValue.toString());
 
         boolean commit = editor.commit();
 

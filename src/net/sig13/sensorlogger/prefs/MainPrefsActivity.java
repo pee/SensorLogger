@@ -38,7 +38,6 @@ public class MainPrefsActivity extends PreferenceActivity implements OnPreferenc
 
         PollingFragment pf = new PollingFragment();
         ft.add(R.id.content, pf, "polling");
-
         ft.commit();
 
         pm = getPreferenceManager();
@@ -68,6 +67,4 @@ public class MainPrefsActivity extends PreferenceActivity implements OnPreferenc
         Log.d(LOG_NAME, "onPreferenceClic");
         return true;
     }
-
-
 }

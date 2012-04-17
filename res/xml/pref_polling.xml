@@ -6,7 +6,7 @@
         android:title="polling" >
 
         <CheckBoxPreference
-            android:key="enable_polling"
+            android:key="enablePolling"
             android:title="Poll Sensors"
             android:summary="If checked the sensor logging service will poll sensors periodically"
             android:defaultValue="true"
@@ -17,25 +17,9 @@
             android:title="Low Battery Polling"
             android:summary="Stop polling when battery is low"
             android:defaultValue="true"
-            android:dependency="enable_polling"
+            android:dependency="enablePolling"
             />
-            
-        <CheckBoxPreference
-            android:key="enableSync"
-            android:title="Sync to service"
-            android:summary="Sync the data to online service"
-            android:defaultValue="false"
-            android:dependency="enable_polling"
-            />
-            
-        <CheckBoxPreference
-            android:key="lowBatterySyncStop"
-            android:title="Low Battery Sync Stop "
-            android:summary="Stop syncing then the battery is low"
-            android:defaultValue="true"
-            android:dependency="enableSync"
-            />
-
+                               
         <CheckBoxPreference
             android:key="enableLocation"
             android:title="Location information"
@@ -44,14 +28,14 @@
             />
 
         <ListPreference
-            android:key="polling_interval"
+            android:key="pollingInterval"
             android:title="Polling Interval"
             android:summary="poll sensors every N seconds"
             android:entries="@array/pollingIntervals"
             android:entryValues="@array/pollingIntervalValues"
             android:defaultValue="300000"
             android:dialogTitle="Time between sensor polls"
-            android:dependency="enable_polling"
+            android:dependency="enablePolling"
             android:numeric="integer"
             />
 
@@ -63,20 +47,67 @@
             android:entryValues="@array/storageTimeValues"
             android:defaultValue="60"
             android:dialogTitle="Time to store data"
-            android:dependency="enable_polling"
+            android:dependency="enablePolling"
             android:numeric="integer"
             />
 
-        <ListPreference
-            android:key="syncTo"
-            android:title="Sync To"
-            android:summary="service to sync to"
-            android:entries="@array/syncTo"
-            android:entryValues="@array/syncToValues"
-            android:defaultValue="sig13.net"
-            android:dialogTitle="Sync to service"
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="sync" >
+
+        <CheckBoxPreference
+            android:key="enableSync"
+            android:title="Sync to service"
+            android:summary="Sync the data to online service"
+            android:defaultValue="false"
+            android:dependency="enablePolling"
+            />
+
+        <CheckBoxPreference
+            android:key="lowBatterySyncStop"
+            android:title="Low Battery Sync Stop "
+            android:summary="Stop syncing then the battery is low"
+            android:defaultValue="true"
             android:dependency="enableSync"
             />
+
+        <!-- put a list preference here of what battery % to stop -->
+
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="syncTargets" >
+
+        <CheckBoxPreference
+            android:key="enableOpenSenSe"
+            android:title="Open.Sen.Se"
+            android:summary="Push to open.sen.se"
+            android:defaultValue="false"
+            android:dependency="enableSync"
+            />
+
+        <EditTextPreference
+            android:key="openSenSeAPIKey"
+            android:title="open.sen.se api key"
+            android:dependency="enableOpenSenSe"
+            android:defaultValue="XXXXXXXXXX"
+            />
+
+        <EditTextPreference
+            android:key="openSenSeFeedID"
+            android:title="open.sen.se feed id"
+            android:dependency="enableOpenSenSe"
+            android:defaultValue="000000"
+        />
+
+        <EditTextPreference
+            android:key="openSenSeAPIUri"
+            android:title="open.sen.se api uri"
+            android:dependency="enableOpenSenSe"
+            android:defaultValue="http://api.sen.se/events/"
+        />
 
     </PreferenceCategory>
 

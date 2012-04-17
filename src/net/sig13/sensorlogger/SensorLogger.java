@@ -12,7 +12,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.SimpleCursorAdapter;
 import net.sig13.sensorlogger.prefs.MainPrefsActivity;
 
 //
@@ -43,8 +42,6 @@ public class SensorLogger extends Activity implements ActionBar.TabListener {
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.setDisplayShowTitleEnabled(false);
 
-//        fm = getFragmentManager();
-
         // last argument == false == don't replace known prefs
         PreferenceManager.setDefaultValues(this, R.xml.pref_polling, true);
 
@@ -52,12 +49,6 @@ public class SensorLogger extends Activity implements ActionBar.TabListener {
 
         cName = startService(intent);
         Log.d(TAG, "cName:" + cName);
-
-//        FragmentTransaction ft = fm.beginTransaction();
-//
-//        SensorDataListFragment sdlf = new SensorDataListFragment();
-//        ft.add(android.R.id.content, sdlf, SENSOR_DATA_LIST_FRAG_TAG);
-//        ft.commit();
 
         Tab tab = actionBar.newTab();
         tab.setText("readings");

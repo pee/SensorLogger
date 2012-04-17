@@ -52,6 +52,5 @@ public class PrefsBackupAgent extends BackupAgentHelper implements SharedPrefere
         Log.d(TAG, "calling dataChanged()");
         bm.dataChanged();
 
-
     }
 }

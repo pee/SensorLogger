@@ -61,6 +61,8 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
     private Notification notification;
     //
     private AlarmManager mgr;
+    //
+
 
     /*
      *
@@ -165,6 +167,20 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
         setEnableLocation(el);
         rr.setEnableLocation(el);
 
+        boolean enableSync = prefs.getBoolean(Constants.PREF_KEY_ENABLE_SYNC, Constants.PREF_DEFAULT_ENABLE_SYNC);
+        rr.setEnableSync(enableSync);
+
+        boolean enableOpenSenSe = prefs.getBoolean(Constants.PREF_KEY_OPENSENSE_ENABLE, Constants.PREF_DEFAULT_OPENSENSE_ENABLE);
+        rr.setEnableOpenSenSe(enableOpenSenSe);
+
+        String openSenSeFeedID = prefs.getString(Constants.PREF_KEY_OPENSENSE_FEED_ID, Constants.PREF_DEFAULT_OPENSENSE_FEED_ID);
+        rr.setOpenSenSeFeedID(openSenSeFeedID);
+
+        String openSenSeAPIKey = prefs.getString(Constants.PREF_KEY_OPENSENSE_API_KEY, Constants.PREF_DEFAULT_OPENSENSE_API_KEY);
+        rr.setOpenSenSeAPIKey(openSenSeAPIKey);
+
+        String openSenSeAPIUri = prefs.getString(Constants.PREF_KEY_OPENSENSE_API_URI, Constants.PREF_DEFAULT_OPENSENSE_API_URI);
+        rr.setOpenSenSeAPIUri(openSenSeAPIUri);
 
         // clear pending scheduled handle events for rr
         handler.removeCallbacks(rr);
@@ -396,7 +412,7 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
             return;
         }
 
-        if ( key.compareToIgnoreCase(Constants.PREF_KEY_ENABLE_SYNC) == 0 ) {
+        if (key.compareToIgnoreCase(Constants.PREF_KEY_ENABLE_SYNC) == 0) {
 
             Log.d(TAG, "Updating synchronization to online service");
             boolean es = sPref.getBoolean(Constants.PREF_KEY_ENABLE_SYNC, Constants.PREF_DEFAULT_ENABLE_SYNC);
@@ -405,6 +421,46 @@ public class SensorLoggerService extends IntentService implements OnSharedPrefer
 
             Log.w(TAG, "#######################################");
             Log.w(TAG, "ENABLE CODE TO TURN SYNC ON/OFF DUMBASS");
+
+            return;
+        }
+
+        if (key.compareToIgnoreCase(Constants.PREF_KEY_OPENSENSE_ENABLE) == 0) {
+
+            Log.d(TAG, "Updating openSenSe sync");
+
+            boolean eo = sPref.getBoolean(Constants.PREF_KEY_OPENSENSE_ENABLE, Constants.PREF_DEFAULT_OPENSENSE_ENABLE);
+            rr.setEnableOpenSenSe(eo);
+
+            return;
+        }
+
+        if (key.compareToIgnoreCase(Constants.PREF_KEY_OPENSENSE_API_KEY) == 0) {
+
+            Log.d(TAG, "Updating openSenSe api key");
+
+            String apiKey = sPref.getString(Constants.PREF_KEY_OPENSENSE_API_KEY, Constants.PREF_DEFAULT_OPENSENSE_API_KEY);
+            rr.setOpenSenSeAPIKey(apiKey);
+
+            return;
+        }
+
+        if (key.compareToIgnoreCase(Constants.PREF_KEY_OPENSENSE_FEED_ID) == 0) {
+
+            Log.d(TAG, "Updating openSenSe feed ID");
+
+            String feedID = sPref.getString(Constants.PREF_KEY_OPENSENSE_FEED_ID, Constants.PREF_DEFAULT_OPENSENSE_FEED_ID);
+            rr.setOpenSenSeFeedID(feedID);
+
+            return;
+        }
+
+        if (key.compareToIgnoreCase(Constants.PREF_KEY_OPENSENSE_API_URI) == 0) {
+
+            Log.d(TAG, "Updating openSenSe API URI");
+
+            String apiUri = sPref.getString(Constants.PREF_KEY_OPENSENSE_API_URI, Constants.PREF_DEFAULT_OPENSENSE_API_URI);
+            rr.setOpenSenSeAPIUri(apiUri);
 
             return;
         }

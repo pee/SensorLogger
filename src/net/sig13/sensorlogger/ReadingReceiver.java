@@ -10,9 +10,23 @@ import android.location.*;
 import android.net.Uri;
 import android.os.*;
 import android.util.Log;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import net.sig13.sensorlogger.SensorLoggerService.LocalBinder;
 import net.sig13.sensorlogger.cp.PressureDataTable;
 import net.sig13.sensorlogger.cp.SensorContentProvider;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthenticationException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.util.EntityUtils;
+import org.json.*;
 
 //
 //
@@ -23,6 +37,11 @@ public class ReadingReceiver extends Service implements SensorEventListener, Loc
     //
 
     public enum PollStatus {
+
+        Paused, Run
+    };
+
+    public enum SyncStatus {
 
         Paused, Run
     };
@@ -56,6 +75,16 @@ public class ReadingReceiver extends Service implements SensorEventListener, Loc
     //
     private double longitude = 0.0;
     private double latitude = 0.0;
+    //
+    public static final int HTTP_REQUEST_TIMEOUT_MS = 30 * 1000;
+    //
+    private volatile SyncStatus syncStatus = SyncStatus.Run;
+    //
+    private volatile SyncStatus openSenSeSync = SyncStatus.Run;
+    private String openSenSeFeedID = Constants.PREF_DEFAULT_OPENSENSE_FEED_ID;
+    private String openSenSeAPIKey = Constants.PREF_DEFAULT_OPENSENSE_API_KEY;
+    private String openSenSeAPIUri = Constants.PREF_DEFAULT_OPENSENSE_API_URI;
+
 
     /*
      *
@@ -248,6 +277,16 @@ public class ReadingReceiver extends Service implements SensorEventListener, Loc
 
         Log.d(TAG, "mNewUri:" + mNewUri + ":" + now);
 
+        if (syncStatus == SyncStatus.Run) {
+
+            if (openSenSeSync == SyncStatus.Run) {
+
+                OpenSenSeJDO ojdo = new OpenSenSeJDO(newReading, openSenSeAPIKey, openSenSeFeedID);
+
+                new PushToOpenSenSe().execute(ojdo);
+            }
+        }
+
     }
 
     /**
@@ -359,7 +398,6 @@ public class ReadingReceiver extends Service implements SensorEventListener, Loc
 
         }
 
-
     }
 
     /**
@@ -416,6 +454,34 @@ public class ReadingReceiver extends Service implements SensorEventListener, Loc
         }
     }
 
+    void setEnableSync(boolean enableSync) {
+        if (enableSync) {
+            syncStatus = SyncStatus.Run;
+        } else {
+            syncStatus = SyncStatus.Paused;
+        }
+    }
+
+    void setEnableOpenSenSe(boolean enableOpenSenSe) {
+        if (enableOpenSenSe) {
+            openSenSeSync = SyncStatus.Run;
+        } else {
+            openSenSeSync = SyncStatus.Paused;
+        }
+    }
+
+    void setOpenSenSeFeedID(String openSenSeFeedID) {
+        this.openSenSeFeedID = openSenSeFeedID;
+    }
+
+    void setOpenSenSeAPIKey(String openSenSeAPIKey) {
+        this.openSenSeAPIKey = openSenSeAPIKey;
+    }
+
+    void setOpenSenSeAPIUri(String openSenSeAPIUri) {
+        this.openSenSeAPIUri = openSenSeAPIUri;
+    }
+
     /*
      *
      *
@@ -423,6 +489,128 @@ public class ReadingReceiver extends Service implements SensorEventListener, Loc
     @Override
     public IBinder onBind(Intent arg0) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public static HttpClient getHttpClient() {
+        HttpClient httpClient = new DefaultHttpClient();
+        final HttpParams params = httpClient.getParams();
+        HttpConnectionParams.setConnectionTimeout(params, HTTP_REQUEST_TIMEOUT_MS);
+        HttpConnectionParams.setSoTimeout(params, HTTP_REQUEST_TIMEOUT_MS);
+        ConnManagerParams.setTimeout(params, HTTP_REQUEST_TIMEOUT_MS);
+        return httpClient;
+    }
+
+    /**
+     *
+     */
+    class OpenSenSeJDO {
+
+        public final double reading;
+        public final String apiKey;
+        public final String feedId;
+
+        public OpenSenSeJDO(double reading, String apiKey, String feedId) {
+
+            if (apiKey == null || apiKey.isEmpty()) {
+                throw new IllegalArgumentException("APIKEY cannot be null");
+            }
+
+            if (feedId == null || feedId.isEmpty()) {
+                throw new IllegalArgumentException("FEED_ID cannot be null");
+            }
+
+            this.reading = reading;
+            this.apiKey = apiKey;
+            this.feedId = feedId;
+        }
+    }
+
+    /**
+     *
+     */
+    class PushToOpenSenSe extends AsyncTask<OpenSenSeJDO, Void, Void> {
+
+        @Override
+        protected Void doInBackground(OpenSenSeJDO... arg0) {
+
+            try {
+                doPush(arg0[0]);
+            } catch (Exception ex) {
+                Log.e(TAG, ex.getMessage(), ex);
+            }
+
+            return null;
+        }
+
+        public void doPush(OpenSenSeJDO jdo) throws JSONException, UnsupportedEncodingException, IOException, AuthenticationException {
+            Log.i(TAG, "Pushing to open.sen.se");
+
+            if (jdo == null) {
+                throw new IllegalArgumentException("JDO cannot be null");
+            }
+
+            if (jdo.apiKey == null || jdo.apiKey.isEmpty()) {
+                throw new IllegalArgumentException("APIKEY cannot be null");
+            }
+
+            if (jdo.feedId == null || jdo.feedId.isEmpty()) {
+                throw new IllegalArgumentException("FEED_ID cannot be null");
+            }
+
+            Log.i(TAG, "APIKEY:" + jdo.apiKey);
+            Log.i(TAG, "FEEDID:" + jdo.feedId);
+            Log.i(TAG, "APIURI:" + openSenSeAPIUri);
+
+            HttpPost post = new HttpPost(openSenSeAPIUri);
+            post.addHeader("sense_key", jdo.apiKey);
+
+            JSONObject jo = new JSONObject();
+            jo.put("feed_id", jdo.feedId);
+            jo.put("value", jdo.reading);
+
+
+            StringEntity se;
+            se = new StringEntity(jo.toString());
+
+
+            //sets the post request as the resulting string
+            post.setEntity(se);
+            //sets a request header so the page receving the request will know what to do with it
+            post.setHeader("Accept", "application/json");
+            post.setHeader("Content-type", "application/json");
+
+            HttpResponse resp = getHttpClient().execute(post);
+
+            Log.d(TAG, "StatusCode:" + resp.getStatusLine().getStatusCode());
+            if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+
+                if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+                    Log.e(TAG, "Authentication exception in sending to open.sen.se");
+                    throw new AuthenticationException();
+                } else {
+                    Log.e(TAG, "Server error in sending to open.sen.se: " + resp.getStatusLine());
+                    throw new IOException();
+                }
+            }
+
+//        200 (OK)Request processed successfully
+//400 (Bad Request)Any case where a parameter is invalid, or a required parameter is missing. Additionnal information might be available, like when you try to access a resource that doesn’t belong to you ::
+//{"failed_events": [[{"feed_id": 1470, "value": 1432101829}, "(' - feed does not belong to user.',)"]]}
+//401 (Authorization Required)The key (sense_key or application_key) provided in the request was incorrect.
+//404 (Not found)Ressource does not exist (bad URL, path...)
+//500 (Internal Server Error)Sen.se servers are not in good shape. The request might be valid, but needs to be retrieved later .
+
+
+            String response = EntityUtils.toString(resp.getEntity());
+
+            Log.d(TAG, response);
+
+            final JSONArray jsonResponse = new JSONArray(response);
+
+            // do something with response
+
+
+        }
     }
     /**
      * Defines callbacks for service binding, passed to bindService()
